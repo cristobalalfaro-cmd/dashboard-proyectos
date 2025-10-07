@@ -4,55 +4,45 @@
   <meta charset="utf-8" />
   <title>Dashboard de Proyectos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- ====== Estilos base ====== -->
   <style>
-    :root{
-      --bg:#ffffff;
-      --ink:#111827;
-      --muted:#6b7280;
-      --card:#ffffff;
-      --border:#e5e7eb;
-      --ring:#dbe4ff;
-      --brand:#0b3d91;
-      --accent:#eef3ff;
-      --ok:#2ca02c;
-      --warn:#ffbf00;
-      --hold:#ff7f0e;
-      --done:#1f77b4;
-      --late:#d62728;
-    }
-    *{box-sizing:border-box}
-    body{
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
-      margin:0;background:#f8fafc;color:var(--ink);
-    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     .wrap{max-width:1200px;margin:32px auto;padding:0 16px}
 
-    h1{margin:0 0 8px 0}
-    .banner{
-      display:none;margin:0 0 12px 0;padding:10px 14px;border-radius:12px;
-      border:1px solid var(--ring);background:var(--accent);color:var(--brand);font-weight:600
-    }
-    .banner small{font-weight:500;opacity:.8;margin-left:8px}
-
-    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0}
-    .card{border:1px solid var(--border);border-radius:12px;background:var(--card);padding:14px}
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+    .card{border:1px solid #e5e7eb;border-radius:12px;padding:14px}
     .card h3{margin:0 0 6px 0;font-size:14px;font-weight:600;opacity:.7}
     .card .v{font-size:22px;font-weight:700}
 
     .filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 24px}
-    select{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;background:#fff}
+    select,input{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
 
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}}
+    /* === 3 gráficos en la misma fila (responsive) === */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+    @media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:700px){.grid{grid-template-columns:1fr}}
 
-    canvas{width:100% !important;height:auto !important}
+    /* Para achicar los gráficos y quepan 3 */
+    .grid .card canvas{height:180px !important; max-height:180px}
 
-    table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--card)}
+    table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden}
     th,td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:13px}
     th{background:#fafafa;text-align:left}
     .muted{opacity:.65}
+
+    /* Overlay acceso (solo vista general) */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .dialog{width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 20px 50px rgba(0,0,0,.15)}
+    .dialog h2{margin:0 0 8px 0;font-size:18px}
+    .dialog p{margin:0 0 14px 0;font-size:14px;opacity:.8}
+    .dialog input{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px}
+    .dialog button{margin-top:10px;width:100%;padding:10px;border:0;border-radius:10px;background:#111;color:#fff;font-weight:600;cursor:pointer}
+    .error{color:#b00020;font-size:13px;margin-top:8px;display:none}
+    .shake{animation:shake .25s}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+
+    /* Banner de cliente */
+    .banner{display:none;margin:0 0 12px 0;padding:10px 14px;border-radius:12px;border:1px solid #dbe4ff;background:#eef3ff;color:#0b3d91;font-weight:600}
+    .banner small{font-weight:500;opacity:.8;margin-left:8px}
 
     /* Encabezados ordenables */
     th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:20px}
@@ -61,22 +51,11 @@
       position:absolute; right:6px; top:50%; transform:translateY(-50%);
       font-size:12px; opacity:.6;
     }
-
-    /* Overlay de clave (solo vista general) */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
-    .dialog{width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 20px 50px rgba(0,0,0,.15)}
-    .dialog h2{margin:0 0 8px 0;font-size:18px}
-    .dialog p{margin:0 0 14px 0;font-size:14px;opacity:.8}
-    .dialog input{width:100%;padding:10px;border:1px solid var(--border);border-radius:10px}
-    .dialog button{margin-top:10px;width:100%;padding:10px;border:0;border-radius:10px;background:#111;color:#fff;font-weight:600;cursor:pointer}
-    .error{color:#b00020;font-size:13px;margin-top:8px;display:none}
-    .shake{animation:shake .25s}
-    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Dashboard de Proyectos</h1>
+    <h1 style="margin:0 0 8px 0">Dashboard de Proyectos</h1>
     <div id="client-banner" class="banner"></div>
 
     <!-- KPIs -->
@@ -98,8 +77,9 @@
 
     <!-- Gráficos -->
     <div class="grid">
-      <div class="card"><h3>Distribución por Estatus</h3><canvas id="chEstatus" height="220"></canvas></div>
-      <div class="card"><h3>Distribución por Owner</h3><canvas id="chOwner" height="220"></canvas></div>
+      <div class="card"><h3>Distribución por Estatus</h3><canvas id="chEstatus"></canvas></div>
+      <div class="card"><h3>Distribución por Owner</h3><canvas id="chOwner"></canvas></div>
+      <div class="card"><h3>% Cumplimiento (Tareas)</h3><canvas id="chGauge"></canvas></div>
     </div>
 
     <!-- Tabla -->
@@ -110,85 +90,72 @@
     </div>
   </div>
 
-  <!-- ====== Librerías ====== -->
+  <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script>
-    /* ============================================================
-       CONFIGURACIÓN / CONSTANTES
-    ============================================================ */
+    /* ================== CONFIG ================== */
     const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
-
-    // Clave cifrada (SHA-256) de "Tomi.2016" para VISTA GENERAL (sin ?cliente=)
+    // Clave cifrada (SHA-256) de "Tomi.2016"
     const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746";
-
-    // Flags de sesión (pestaña)
     const SESSION_FLAG = "dashboard_auth_ok";
-    const SESSION_ALLOWED_CLIENTS = "allowed_clients"; // anclaje cliente por pestaña
+    const SESSION_ALLOWED_CLIENTS = "allowed_clients";
 
-    // Mapeo flexible de columnas por nombres (para hojas que no son "Tareas")
+    /* ================== MAPEOS ================== */
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
-      tarea:     ["Tarea","Tareas","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
+      tarea:     ["Tarea","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
       tipo:      ["Tipo","Category"],
       estatus:   ["Estatus","Estado","Status"],
       owner:     ["Owner","Responsable","Asignado","Ejecutor"],
       deadline:  ["Deadline","Fecha Limite","Fecha Límite","Vencimiento","Due Date"]
     };
 
-    /* ============================================================
-       UTILIDADES
-    ============================================================ */
+    /* ================== URL / normalización ================== */
     const urlParams = new URLSearchParams(window.location.search);
-    const clienteParamRaw = urlParams.get('cliente'); // puede venir "A,B,C"
-
+    const clienteParamRaw = urlParams.get('cliente');
     const normalizeKey = (s) => (s ?? "").toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-    const normStr = (s) => (s ?? "").toString().trim();
-
     function parseClienteParam(){
       if(!clienteParamRaw) return null;
       return clienteParamRaw.split(',').map(s=>s.trim()).filter(Boolean).map(normalizeKey);
     }
 
-    function toDate(v){
+    /* ================== Utils ================== */
+    const normStr = (s) => (s ?? "").toString().trim();
+    const toDate  = (v) => {
       if (!v && v!==0) return null;
       try {
         if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
         const d = new Date(v); return isNaN(d)?null:d;
       } catch { return null; }
-    }
-    function today0(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
-    function fmt(n){ return new Intl.NumberFormat("es-CL").format(n); }
+    };
+    const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
+    const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
+    const isFinalizado = (txt) => { const t = normalizeKey(txt); return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada"; };
+    const isOnHold = (txt) => { const t=normalizeKey(txt); return t==="on hold"||t==="onhold"; };
 
-    function isFinalizado(txt){
-      const t = normalizeKey(txt);
-      return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada";
-    }
-    function isOnHold(txt){
-      const t=normalizeKey(txt);
-      return t==="on hold"||t==="onhold";
-    }
     function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
+    function normalizeRow(r){
+      return {
+        cliente:   normStr(pick(r, FIELD_MAP.cliente)),
+        proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
+        tarea:     normStr(pick(r, FIELD_MAP.tarea)),
+        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),
+        estatus:   normStr(pick(r, FIELD_MAP.estatus)),
+        owner:     normStr(pick(r, FIELD_MAP.owner)),
+        deadline:  toDate(pick(r, FIELD_MAP.deadline)),
+        _raw: r
+      };
+    }
     function uniqueSorted(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')); }
 
-    /* ============================================================
-       ESTADO
-    ============================================================ */
-    let RAW = [];   // Data cargada (posible hard-cap por cliente)
-    let VIEW = [];  // Data con filtros de UI
-    let chEstatus, chOwner; // charts
-    let sortState = { key: null, dir: 1 }; // tabla ordenable
+    /* ================== Estado ================== */
+    let RAW=[], VIEW=[], chEstatus, chOwner, chGauge;
 
-    const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
-    function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
-    function cmpDate(a,b){ const ax = a ? a.getTime() : 0; const bx = b ? b.getTime() : 0; return ax - bx; }
-
-    /* ============================================================
-       BANNER (solo en vista por cliente)
-    ============================================================ */
-    function updateBanner(){
+    /* ================== Banner ================== */
+    function updateBanner() {
       const banner = document.getElementById('client-banner');
       const params = parseClienteParam();
       if (params && params.length) {
@@ -201,17 +168,13 @@
       }
     }
 
-    /* ============================================================
-       KPIs
-    ============================================================ */
+    /* ================== KPIs ================== */
     function renderKPIs(){
       const clientes = uniqueSorted(VIEW.map(r=>r.cliente)).length;
 
       // Proyectos activos: nombres distintos con tipo = "proyecto"
       const proyectosSet = new Set(
-        VIEW.filter(r => normalizeKey(r.tipo) === "proyecto")
-            .map(r => r.proyecto)
-            .filter(Boolean)
+        VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean)
       );
       const proyectosActivos = proyectosSet.size;
 
@@ -230,9 +193,7 @@
       document.getElementById("kpi-onhold").textContent     = fmt(onHold);
     }
 
-    /* ============================================================
-       FILTROS
-    ============================================================ */
+    /* ================== Filtros ================== */
     function renderFilters(){
       const setOpts = (id, values) => {
         const el = document.getElementById(id);
@@ -258,30 +219,19 @@
         const okE = !e || normalizeKey(r.estatus)  === e;
         return okC && okP && okO && okE;
       });
-      renderKPIs(); renderFilters(); renderCharts(); renderTable();
+      renderKPIs(); renderFilters(); renderCharts(); renderTable(); renderGauge();
     }
-    ["f-cliente","f-proyecto","f-owner","f-estatus"].forEach(id=>{
-      // listeners cuando la UI se haya renderizado
-      window.addEventListener('DOMContentLoaded', ()=>{
-        const el = document.getElementById(id);
-        if (el) el.addEventListener("change", applyFilters);
-      });
-    });
 
-    /* ============================================================
-       GRÁFICOS
-    ============================================================ */
+    /* ================== Gráficos ================== */
     function renderCharts(){
       const COLORS = {
-        "Finalizado": varCss('--done') || "#1f77b4",
-        "Iniciado en Plazo": varCss('--ok') || "#2ca02c",
-        "No iniciado": varCss('--warn') || "#ffbf00",
-        "On Hold": varCss('--hold') || "#ff7f0e",
-        "Atrasado": varCss('--late') || "#d62728",
+        "Finalizado": "#1f77b4",          // azul
+        "Iniciado en Plazo": "#2ca02c",   // verde
+        "No iniciado": "#ffbf00",         // amarillo
+        "On Hold": "#ff7f0e",             // naranjo
+        "Atrasado": "#d62728",            // rojo
         "Otros": "#9e9e9e"
       };
-      function varCss(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
       const hoy = today0().getTime();
       const buckets = { "Finalizado":0, "Iniciado en Plazo":0, "No iniciado":0, "On Hold":0, "Atrasado":0, "Otros":0 };
 
@@ -311,7 +261,7 @@
       chEstatus = new Chart(document.getElementById("chEstatus"), {
         type: "pie",
         data: { labels, datasets: [{ data: counts, backgroundColor: bg }] },
-        options: { responsive:true }
+        options: { responsive:true, plugins:{legend:{position:'bottom'}} }
       });
 
       // Owner
@@ -323,24 +273,101 @@
       chOwner = new Chart(document.getElementById("chOwner"), {
         type: "pie",
         data: { labels: ownerLabels, datasets: [{ data: ownerCounts }] },
-        options: { responsive:true }
+        options: { responsive:true, plugins:{legend:{position:'bottom'}} }
       });
     }
 
-    /* ============================================================
-       TABLA DETALLE (columna Tarea + orden + atrasadas en rojo)
-    ============================================================ */
+    /* ===== Gauge helpers ===== */
+    // Plugin para mostrar el % al centro
+    const GaugeTextPlugin = {
+      id: 'gaugeText',
+      afterDraw(chart) {
+        if (!chart || chart._gaugePct === undefined) return;
+        const ctx = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+        if (!meta || !meta.data || !meta.data[0]) return;
+        const {x,y} = meta.data[0];
+        ctx.save();
+        ctx.font = '600 24px system-ui,-apple-system,Segoe UI,Roboto';
+        ctx.fillStyle = '#111';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(chart._gaugePct + '%', x, y);
+        ctx.restore();
+      }
+    };
+
+    function getCompletionStats() {
+      const tasks = VIEW.filter(r => (r.tipo || '').toLowerCase() === 'tarea');
+      const total = tasks.length;
+      const done = tasks.filter(r => isFinalizado(r.estatus)).length;
+      const pct  = total ? Math.round((done * 100) / total) : 0;
+      return { total, done, pct };
+    }
+
+    function renderGauge(){
+      const { total, done, pct } = getCompletionStats();
+      const rest = Math.max(total - done, 0);
+      const ctx = document.getElementById('chGauge');
+      if (!ctx) return;
+      if (chGauge) chGauge.destroy();
+
+      chGauge = new Chart(ctx, {
+        type: 'doughnut',
+        plugins: [GaugeTextPlugin],
+        data: {
+          labels: ['Completado', 'Pendiente'],
+          datasets: [{
+            data: [done, rest],
+            backgroundColor: ['#2ca02c', '#e5e7eb'],
+            borderWidth: 0,
+            hoverOffset: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          cutout: '70%',
+          // Para semi-gauge, descomenta:
+          // rotation: -90,
+          // circumference: 180,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (i) => {
+                  const label = i.label || '';
+                  const val = i.raw;
+                  return `${label}: ${val} (${pct}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+      chGauge._gaugePct = pct;
+      chGauge.update();
+    }
+
+    /* ================== Ordenamiento para Detalle ================== */
+    let sortState = { key: null, dir: 1 }; // dir: 1 asc, -1 desc
+    const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
+    function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
+    function cmpDate(a,b){ const ax = a ? a.getTime() : 0; const bx = b ? b.getTime() : 0; return ax - bx; }
+
+    /* ================== Tabla (columna Tarea + filas rojas atrasadas) ================== */
     function renderTable(){
       const labels = ["Cliente","Proyecto","Tarea","Tipo","Estatus","Owner","Deadline"];
       const thead = document.querySelector("#tbl thead");
       const tbody = document.querySelector("#tbl tbody");
 
+      // Encabezados ordenables
       thead.innerHTML = "<tr>" + labels.map((l, i) => {
         const active = SORT_KEYS[i] === sortState.key;
         const arrow  = active ? (sortState.dir === 1 ? "▲" : "▼") : "";
         return `<th class="sortable" data-col="${i}" data-sort="${arrow}">${l}</th>`;
       }).join("") + "</tr>";
 
+      // Copia y orden
       let rows = [...VIEW];
       if (sortState.key){
         const idx = SORT_KEYS.indexOf(sortState.key);
@@ -350,7 +377,6 @@
           return res * sortState.dir;
         });
       } else {
-        // Orden por defecto: Cliente → Proyecto → Tarea
         rows.sort((a,b)=>{
           const c = cmpText(a.cliente, b.cliente); if (c) return c;
           const p = cmpText(a.proyecto, b.proyecto); if (p) return p;
@@ -361,10 +387,10 @@
       const hoy = today0().getTime();
 
       tbody.innerHTML = rows.map(r=>{
-        // "tarea atrasada" = tipo=tarea, no finalizada y deadline pasado
+        // Regla de "tarea atrasada": tipo=tarea, no finalizado y deadline pasado
         const isTask = (r.tipo||"").toLowerCase() === "tarea";
         const overdue = isTask && !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy;
-        const rowStyle = overdue ? 'style="color: var(--late); font-weight:600"' : '';
+        const rowStyle = overdue ? 'style="color:#d62728"' : '';
 
         const cells = [
           r.cliente || "",
@@ -392,58 +418,43 @@
       });
     }
 
-    /* ============================================================
-       CARGA DE EXCEL
-       - Usa hoja "Tareas" si existe
-       - Fallback: fuerza columna D como "Tarea" si el encabezado no calza
-    ============================================================ */
+    /* ================== Carga Excel (+ hard cap y anclaje de cliente) ================== */
     async function loadExcel(){
       const res = await fetch(EXCEL_FILE);
       if(!res.ok){ alert("No pude cargar el Excel"); return; }
       const buf = await res.arrayBuffer();
       const wb  = XLSX.read(buf, {type:"array"});
 
+      // Preferir hoja "Tareas" si existe, si no usar la primera
       const sheetName = wb.SheetNames.includes("Tareas") ? "Tareas" : wb.SheetNames[0];
       const sheet = wb.Sheets[sheetName];
 
-      // 1) objetos usando encabezados
+      // 1) A objetos por encabezados
       const rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
-      // 2) Si es hoja "Tareas", inyecta columna D como "Tarea" si faltara
+      // 2) Si estamos en "Tareas", inyectar columna D como "Tarea" si faltara.
       if (sheetName === "Tareas" && sheet["!ref"]) {
         const range = XLSX.utils.decode_range(sheet["!ref"]);
         rowsObj.forEach((row, idx) => {
-          const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 base1, +1 salta encabezado
+          const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 base1, +1 encabezado
           const cellAddr = "D" + excelRowNumber; // Columna D
           const cell = sheet[cellAddr];
           const valD = cell ? cell.v : "";
-          if (!row["Tarea"] && !row["tarea"] && valD !== undefined) {
-            row["Tarea"] = valD; // fuerza desde columna D
-          }
+          if (!row["Tarea"] && !row["tarea"] && valD !== undefined) row["Tarea"] = valD;
         });
       }
 
-      // Normalización de filas
-      let tmp = rowsObj.map(r => ({
-        cliente:   normStr(pick(r, FIELD_MAP.cliente)),
-        proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tarea:     normStr(pick(r, FIELD_MAP.tarea)),
-        tipo:      normStr(pick(r, FIELD_MAP.tipo)),
-        estatus:   normStr(pick(r, FIELD_MAP.estatus)),
-        owner:     normStr(pick(r, FIELD_MAP.owner)),
-        deadline:  toDate(pick(r, FIELD_MAP.deadline))
-      }));
+      RAW = rowsObj.map(normalizeRow);
 
-      // Hard cap por cliente (vista pública con ?cliente=) + anclaje de pestaña
       const clientesParam = parseClienteParam();
       if (clientesParam && clientesParam.length) {
-        tmp = tmp.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
+        RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
         sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
-        // Bloquea filtro Cliente (muestra solo ese/eses clientes)
+        // Bloquear filtro Cliente
         queueMicrotask(() => {
           const fc = document.getElementById('f-cliente');
           if (fc) {
-            const label = (uniqueSorted(tmp.map(x=>x.cliente)).join(', ')) || clienteParamRaw || "Cliente";
+            const label = (uniqueSorted(RAW.map(x=>x.cliente)).join(', ')) || clienteParamRaw || "Cliente";
             fc.innerHTML = `<option>${label}</option>`;
             fc.value = label;
             fc.disabled = true;
@@ -451,19 +462,12 @@
         });
       }
 
-      RAW  = tmp;
       VIEW = [...RAW];
-
       updateBanner();
-      renderKPIs();
-      renderFilters();
-      renderCharts();
-      renderTable();
+      renderKPIs(); renderFilters(); renderCharts(); renderTable(); renderGauge();
     }
 
-    /* ============================================================
-       ACCESO (Clave SOLO en vista general)
-    ============================================================ */
+    /* ================== Password (solo vista general) ================== */
     async function checkPassword(inputPassword){
       const enc = new TextEncoder().encode(inputPassword);
       const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
@@ -473,7 +477,7 @@
     }
     function shouldRequirePassword(){
       const c = parseClienteParam();
-      return !c || c.length === 0; // sin ?cliente= => vista general => clave
+      return !c || c.length === 0;
     }
     function showPasswordOverlay(){
       const overlay = document.createElement('div');
@@ -510,14 +514,12 @@
       input.focus();
     }
 
-    /* ============================================================
-       INIT + ANCLAJE POR PESTAÑA (no dejar salir de su cliente)
-    ============================================================ */
+    /* ================== Init con anclaje de cliente ================== */
     (function init(){
       const clientesParam = parseClienteParam();
       const saved = sessionStorage.getItem(SESSION_ALLOWED_CLIENTS);
 
-      // Si NO hay ?cliente= pero en esta pestaña ya se fijó uno antes, reponerlo (evita fuga al general)
+      // Si no hay ?cliente= pero ya estaba fijado en esta pestaña, reponerlo
       if ((!clientesParam || !clientesParam.length) && saved) {
         const arr = JSON.parse(saved);
         const base = window.location.origin + window.location.pathname;
@@ -526,15 +528,18 @@
         return;
       }
 
-      // VISTA GENERAL => pedir clave (una vez por pestaña)
       if (shouldRequirePassword()){
         if (sessionStorage.getItem(SESSION_FLAG) === "1"){ loadExcel(); }
         else { showPasswordOverlay(); }
       } else {
-        // Vista cliente => no pide clave
         loadExcel();
       }
     })();
+
+    // Eventos filtros
+    ["f-cliente","f-proyecto","f-owner","f-estatus"].forEach(id=>{
+      document.getElementById(id).addEventListener("change", applyFilters);
+    });
   </script>
 </body>
 </html>
