@@ -232,17 +232,38 @@
     }
 
     /* ================== Tabla ================== */
-    function renderTable(){
-      const labels = ["Cliente","Proyecto","Tipo","Estatus","Owner","Deadline"];
-      const thead = document.querySelector("#tbl thead");
-      const tbody = document.querySelector("#tbl tbody");
-      thead.innerHTML = "<tr>" + labels.map(l=>`<th>${l}</th>`).join("") + "</tr>";
-      tbody.innerHTML = VIEW.map(r=>{
-        const cells = [r.cliente, r.proyecto, r.tipo, r.estatus, r.owner, r.deadline ? r.deadline.toLocaleDateString() : ""];
-        return "<tr>" + cells.map(c=>`<td>${c??""}</td>`).join("") + "</tr>";
-      }).join("");
-      document.getElementById("count").textContent = `${VIEW.length} fila(s)`;
-    }
+   function renderTable(){
+  const labels = ["Cliente","Proyecto","Tipo","Estatus","Owner","Deadline"];
+  const thead = document.querySelector("#tbl thead");
+  const tbody = document.querySelector("#tbl tbody");
+  thead.innerHTML = "<tr>" + labels.map(l=>`<th>${l}</th>`).join("") + "</tr>";
+
+  // Ordenar: primero proyectos, luego tareas (si las hay)
+  const ordered = [...VIEW].sort((a,b)=>{
+    if(a.tipo === b.tipo) return a.proyecto.localeCompare(b.proyecto);
+    return a.tipo === "proyecto" ? -1 : 1;
+  });
+
+  tbody.innerHTML = ordered.map(r=>{
+    const cells = [
+      r.cliente,
+      r.proyecto,
+      r.tipo || "",
+      r.estatus || "",
+      r.owner || "",
+      r.deadline ? r.deadline.toLocaleDateString() : ""
+    ];
+    // Si es tarea, color o indentación leve
+    const isTask = r.tipo && r.tipo.toLowerCase() === "tarea";
+    return `<tr style="${isTask ? "background:#fafafa" : ""}">` +
+           cells.map(c=>`<td>${c??""}</td>`).join("") +
+           "</tr>";
+  }).join("");
+
+  document.getElementById("count").textContent = `${VIEW.length} fila(s)`;
+}
+
+
 
     /* ================== Carga Excel (+ hard cap y anclaje de cliente) ================== */
     async function loadExcel(){
