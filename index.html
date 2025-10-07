@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <title>Dashboard Proyectos</title>
+  <title>Dashboard de Proyectos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
@@ -26,7 +26,7 @@
     <h1 style="margin:0 0 8px 0">Dashboard de Proyectos</h1>
     <div class="muted">Fuente: <code>Template_Proyectos_Dashboard.xlsx</code></div>
 
-    <!-- KPIs solicitados -->
+    <!-- KPIs -->
     <div class="kpis">
       <div class="card"><h3>N° Clientes</h3><div id="kpi-clientes" class="v">—</div></div>
       <div class="card"><h3>N° Proyectos activos</h3><div id="kpi-proyectos" class="v">—</div></div>
@@ -73,15 +73,32 @@
 
     const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
 
+    // ==================  URL params y normalización  ==================
+    const urlParams = new URLSearchParams(window.location.search);
+    const clienteParamRaw = urlParams.get('cliente'); // admite "A,B,C"
+
+    const normalizeKey = (s) => (s ?? "")
+      .toString()
+      .trim()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // quita tildes
+      .toLowerCase();
+
+    function parseClienteParam() {
+      if (!clienteParamRaw) return null;
+      return clienteParamRaw
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(normalizeKey);
+    }
+
     // ==================  UTILIDADES  ==================
     const normStr = (s) => (s ?? "").toString().trim();
     const toDate  = (v) => {
       if (!v && v!==0) return null;
       try {
-        // Maneja fechas Excel (número) y texto ISO/local
         if (typeof v === "number") {
-          // base Excel (1900)
-          const start = new Date(Date.UTC(1899,11,30));
+          const start = new Date(Date.UTC(1899,11,30)); // fecha base Excel 1900
           return new Date(start.getTime() + v*86400000);
         }
         const d = new Date(v);
@@ -90,6 +107,10 @@
     };
     const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
     const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
+    const isFinalizado = (txt) => {
+      const t = normalizeKey(txt);
+      return t === "finalizado" || t === "finalizada" || t === "cerrado" || t === "completado" || t === "completada";
+    };
 
     function pick(obj, aliases){
       for (const a of aliases){ if (a in obj) return obj[a]; }
@@ -100,11 +121,11 @@
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),     // para comparar ("proyecto")
+        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(), // "proyecto" para KPI
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
         deadline:  toDate(pick(r, FIELD_MAP.deadline)),
-        _raw: r    // conserva por si quieres mostrar más columnas
+        _raw: r
       };
     }
 
@@ -122,15 +143,12 @@
       // Proyectos activos: contar filas donde tipo === "proyecto"
       const proyectosActivos = VIEW.filter(r => r.tipo === "proyecto").length;
 
-      // Tareas pendientes: total con Estatus distinto de "Finalizado"
-      const pendientes = VIEW.filter(r => r.estatus.toLowerCase() !== "finalizado").length;
+      // Tareas pendientes: estatus distinto de "Finalizado"
+      const pendientes = VIEW.filter(r => !isFinalizado(r.estatus)).length;
 
       // Tareas vencidas: no finalizado y deadline < hoy
       const hoy = today0().getTime();
-      const vencidas = VIEW.filter(r =>
-        r.estatus.toLowerCase() !== "finalizado" &&
-        r.deadline && r.deadline.getTime() < hoy
-      ).length;
+      const vencidas = VIEW.filter(r => !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy).length;
 
       document.getElementById("kpi-clientes").textContent   = fmt(clientes);
       document.getElementById("kpi-proyectos").textContent  = fmt(proyectosActivos);
@@ -143,7 +161,8 @@
       const setOpts = (id, values) => {
         const el = document.getElementById(id);
         const selected = el.value;
-        el.innerHTML = `<option value="">${el.options[0].text}</option>` +
+        const label = el.options[0]?.text || "Todos";
+        el.innerHTML = `<option value="">${label}</option>` +
           uniqueSorted(values).map(v=>`<option>${v}</option>`).join("");
         if (values.includes(selected)) el.value = selected;
       };
@@ -155,16 +174,16 @@
     }
 
     function applyFilters(){
-      const c = normStr(document.getElementById("f-cliente").value).toLowerCase();
-      const p = normStr(document.getElementById("f-proyecto").value).toLowerCase();
-      const o = normStr(document.getElementById("f-owner").value).toLowerCase();
-      const e = normStr(document.getElementById("f-estatus").value).toLowerCase();
+      const c = normalizeKey(document.getElementById("f-cliente").value);
+      const p = normalizeKey(document.getElementById("f-proyecto").value);
+      const o = normalizeKey(document.getElementById("f-owner").value);
+      const e = normalizeKey(document.getElementById("f-estatus").value);
 
       VIEW = RAW.filter(r=>{
-        const okC = !c || r.cliente.toLowerCase()  === c;
-        const okP = !p || r.proyecto.toLowerCase() === p;
-        const okO = !o || r.owner.toLowerCase()    === o;
-        const okE = !e || r.estatus.toLowerCase()  === e;
+        const okC = !c || normalizeKey(r.cliente)  === c;
+        const okP = !p || normalizeKey(r.proyecto) === p;
+        const okO = !o || normalizeKey(r.owner)    === o;
+        const okE = !e || normalizeKey(r.estatus)  === e;
         return okC && okP && okO && okE;
       });
 
@@ -178,7 +197,7 @@
     function renderCharts(){
       // Pie por Estatus
       const byEstatus = {};
-      VIEW.forEach(r=>{ byEstatus[r.estatus] = (byEstatus[r.estatus]||0)+1; });
+      VIEW.forEach(r=>{ const k = r.estatus || "Sin estatus"; byEstatus[k] = (byEstatus[k]||0)+1; });
       const estatusLabels = Object.keys(byEstatus);
       const estatusCounts = estatusLabels.map(k=>byEstatus[k]);
 
@@ -205,12 +224,11 @@
 
     // ==================  TABLA  ==================
     function renderTable(){
-      const cols = ["cliente","proyecto","tipo","estatus","owner","deadline"];
       const labels = ["Cliente","Proyecto","Tipo","Estatus","Owner","Deadline"];
-
       const thead = document.querySelector("#tbl thead");
       const tbody = document.querySelector("#tbl tbody");
       thead.innerHTML = "<tr>" + labels.map(l=>`<th>${l}</th>`).join("") + "</tr>";
+
       tbody.innerHTML = VIEW.map(r=>{
         const cells = [
           r.cliente,
@@ -222,10 +240,11 @@
         ];
         return "<tr>" + cells.map(c=>`<td>${c??""}</td>`).join("") + "</tr>";
       }).join("");
+
       document.getElementById("count").textContent = `${VIEW.length} fila(s)`;
     }
 
-    // ==================  CARGA EXCEL  ==================
+    // ==================  CARGA EXCEL (+ hard cap por cliente en URL)  ==================
     async function loadExcel(){
       const res = await fetch(EXCEL_FILE);
       if(!res.ok){ alert("No pude cargar el Excel"); return; }
@@ -235,6 +254,25 @@
       const raw  = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
       RAW = raw.map(normalizeRow);
+
+      // Hard cap por cliente vía URL
+      const clientesParam = parseClienteParam(); // array normalizado o null
+      if (clientesParam && clientesParam.length) {
+        RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
+
+        // Fijar y bloquear filtro Cliente para la UI
+        queueMicrotask(() => {
+          const fc = document.getElementById('f-cliente');
+          if (fc) {
+            // Si hay varios clientes en la URL, mostramos "Cliente (filtrado)"
+            const label = (uniqueSorted(RAW.map(x=>x.cliente)).join(', ')) || clienteParamRaw || "Cliente";
+            fc.innerHTML = `<option>${label}</option>`;
+            fc.value = label;
+            fc.disabled = true;
+          }
+        });
+      }
+
       VIEW = [...RAW];
 
       renderKPIs();
