@@ -339,14 +339,36 @@
       if(!res.ok){ alert("No pude cargar el Excel"); return; }
       const buf = await res.arrayBuffer();
       const wb  = XLSX.read(buf, {type:"array"});
-      const sheet = wb.Sheets[wb.SheetNames[0]];
-      const raw  = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
-      RAW = raw.map(normalizeRow);
+      // Preferir hoja "Tareas" si existe, si no usar la primera
+      const sheetName = wb.SheetNames.includes("Tareas") ? "Tareas" : wb.SheetNames[0];
+      const sheet = wb.Sheets[sheetName];
 
+      // 1) Objeto por encabezados (si existen)
+      const rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
+
+      // 2) Si estamos en "Tareas", inyectar columna D como "Tarea" si estuviera vacía o sin nombre estándar
+      if (sheetName === "Tareas" && sheet["!ref"]) {
+        const range = XLSX.utils.decode_range(sheet["!ref"]);
+        // Asumimos fila 1 como encabezado y datos desde 2
+        rowsObj.forEach((row, idx) => {
+          const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 a base 1, +1 saltar encabezado
+          const cellAddr = "D" + excelRowNumber; // Columna D
+          const cell = sheet[cellAddr];
+          const valD = cell ? cell.v : "";
+          // Si el campo Tarea no vino mapeado, o está vacío, usamos D
+          if (!row["Tarea"] && !row["tarea"] && valD !== undefined) {
+            row["Tarea"] = valD;
+          }
+        });
+      }
+
+      // Normalizar a nuestro esquema
+      RAW = rowsObj.map(normalizeRow);
+
+      // Hard cap por cliente (vistas públicas) + anclaje
       const clientesParam = parseClienteParam();
       if (clientesParam && clientesParam.length) {
-        // Hard cap
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
         sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
         // Bloquear filtro Cliente
