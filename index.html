@@ -7,7 +7,11 @@
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     .wrap{max-width:1200px;margin:32px auto;padding:0 16px}
-    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:12px;margin-bottom:16px
+    }
     .card{border:1px solid #e5e7eb;border-radius:12px;padding:14px}
     .card h3{margin:0 0 6px 0;font-size:14px;font-weight:600;opacity:.7}
     .card .v{font-size:22px;font-weight:700}
@@ -18,13 +22,27 @@
     th,td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:13px}
     th{background:#fafafa;text-align:left}
     .muted{opacity:.65}
-    @media (max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}}
+
+    /* ===== Overlay de acceso (solo vista general) ===== */
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999
+    }
+    .dialog{
+      width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 20px 50px rgba(0,0,0,.15)
+    }
+    .dialog h2{margin:0 0 8px 0;font-size:18px}
+    .dialog p{margin:0 0 14px 0;font-size:14px;opacity:.8}
+    .dialog input{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px}
+    .dialog button{margin-top:10px;width:100%;padding:10px;border:0;border-radius:10px;background:#111;color:#fff;font-weight:600;cursor:pointer}
+    .error{color:#b00020;font-size:13px;margin-top:8px;display:none}
+    .shake{animation:shake .25s}
+    @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1 style="margin:0 0 8px 0">Dashboard de Proyectos</h1>
-    <div class="muted">Fuente: <code>Template_Proyectos_Dashboard.xlsx</code></div>
 
     <!-- KPIs -->
     <div class="kpis">
@@ -32,9 +50,10 @@
       <div class="card"><h3>N° Proyectos activos</h3><div id="kpi-proyectos" class="v">—</div></div>
       <div class="card"><h3>N° Tareas pendientes</h3><div id="kpi-pendientes" class="v">—</div></div>
       <div class="card"><h3>N° Tareas vencidas</h3><div id="kpi-vencidas" class="v">—</div></div>
+      <div class="card"><h3>N° Tareas On Hold</h3><div id="kpi-onhold" class="v">—</div></div>
     </div>
 
-    <!-- Filtros: Cliente, Proyecto, Owner, Estatus -->
+    <!-- Filtros -->
     <div class="filters">
       <select id="f-cliente"><option value="">Cliente (todos)</option></select>
       <select id="f-proyecto"><option value="">Proyecto (todos)</option></select>
@@ -61,7 +80,14 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script>
-    // ==================  MAPEOS (ajusta si tus columnas se llaman distinto)  ==================
+    /* ================== CONFIG ================== */
+    const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
+
+    // Clave cifrada (SHA-256) para vista general: "Tomi.2016"
+    const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746";
+    const SESSION_FLAG = "dashboard_auth_ok";
+
+    /* ================== MAPEOS (ajusta si tus columnas se llaman distinto) ================== */
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
@@ -71,77 +97,59 @@
       deadline:  ["Deadline","Fecha Limite","Fecha Límite","Vencimiento","Due Date"]
     };
 
-    const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
-
-    // ==================  URL params y normalización  ==================
+    /* ================== URL params / normalización ================== */
     const urlParams = new URLSearchParams(window.location.search);
     const clienteParamRaw = urlParams.get('cliente'); // admite "A,B,C"
-
-    const normalizeKey = (s) => (s ?? "")
-      .toString()
-      .trim()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // quita tildes
-      .toLowerCase();
-
-    function parseClienteParam() {
-      if (!clienteParamRaw) return null;
-      return clienteParamRaw
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean)
-        .map(normalizeKey);
+    const normalizeKey = (s) => (s ?? "").toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    function parseClienteParam(){
+      if(!clienteParamRaw) return null;
+      return clienteParamRaw.split(',').map(s=>s.trim()).filter(Boolean).map(normalizeKey);
     }
 
-    // ==================  UTILIDADES  ==================
+    /* ================== Utils ================== */
     const normStr = (s) => (s ?? "").toString().trim();
     const toDate  = (v) => {
       if (!v && v!==0) return null;
       try {
-        if (typeof v === "number") {
-          const start = new Date(Date.UTC(1899,11,30)); // fecha base Excel 1900
-          return new Date(start.getTime() + v*86400000);
-        }
-        const d = new Date(v);
-        return isNaN(d) ? null : d;
+        if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
+        const d = new Date(v); return isNaN(d)?null:d;
       } catch { return null; }
     };
     const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
     const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
+
     const isFinalizado = (txt) => {
       const t = normalizeKey(txt);
-      return t === "finalizado" || t === "finalizada" || t === "cerrado" || t === "completado" || t === "completada";
+      return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada";
     };
+    const isOnHold = (txt) => normalizeKey(txt) === "on hold" || normalizeKey(txt) === "onhold";
 
-    function pick(obj, aliases){
-      for (const a of aliases){ if (a in obj) return obj[a]; }
-      return undefined;
-    }
-
+    function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
     function normalizeRow(r){
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(), // "proyecto" para KPI
+        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(), // "proyecto"
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
         deadline:  toDate(pick(r, FIELD_MAP.deadline)),
         _raw: r
       };
     }
-
     function uniqueSorted(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')); }
 
-    // ==================  ESTADO  ==================
-    let RAW = [];
-    let VIEW = [];
-    let chEstatus, chOwner;
+    /* ================== Estado ================== */
+    let RAW=[], VIEW=[], chEstatus, chOwner;
 
-    // ==================  KPIs  ==================
+    /* ================== KPIs ================== */
     function renderKPIs(){
       const clientes = uniqueSorted(VIEW.map(r=>r.cliente)).length;
 
-      // Proyectos activos: contar filas donde tipo === "proyecto"
-      const proyectosActivos = VIEW.filter(r => r.tipo === "proyecto").length;
+      // Proyectos activos: contar NOMBRES de proyecto distintos con tipo = "proyecto"
+      const proyectosSet = new Set(
+        VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean)
+      );
+      const proyectosActivos = proyectosSet.size;
 
       // Tareas pendientes: estatus distinto de "Finalizado"
       const pendientes = VIEW.filter(r => !isFinalizado(r.estatus)).length;
@@ -150,35 +158,38 @@
       const hoy = today0().getTime();
       const vencidas = VIEW.filter(r => !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy).length;
 
+      // Tareas On Hold: estatus "On Hold" O falta Deadline/Owner/Estatus
+      const onHold = VIEW.filter(r => {
+        const faltaInfo = !(r.deadline) || !(r.estatus) || !(r.owner);
+        return isOnHold(r.estatus) || faltaInfo;
+      }).length;
+
       document.getElementById("kpi-clientes").textContent   = fmt(clientes);
       document.getElementById("kpi-proyectos").textContent  = fmt(proyectosActivos);
       document.getElementById("kpi-pendientes").textContent = fmt(pendientes);
       document.getElementById("kpi-vencidas").textContent   = fmt(vencidas);
+      document.getElementById("kpi-onhold").textContent     = fmt(onHold);
     }
 
-    // ==================  FILTROS  ==================
+    /* ================== Filtros ================== */
     function renderFilters(){
       const setOpts = (id, values) => {
         const el = document.getElementById(id);
         const selected = el.value;
         const label = el.options[0]?.text || "Todos";
-        el.innerHTML = `<option value="">${label}</option>` +
-          uniqueSorted(values).map(v=>`<option>${v}</option>`).join("");
+        el.innerHTML = `<option value="">${label}</option>` + uniqueSorted(values).map(v=>`<option>${v}</option>`).join("");
         if (values.includes(selected)) el.value = selected;
       };
-
       setOpts("f-cliente",  VIEW.map(r=>r.cliente));
       setOpts("f-proyecto", VIEW.map(r=>r.proyecto));
       setOpts("f-owner",    VIEW.map(r=>r.owner));
       setOpts("f-estatus",  VIEW.map(r=>r.estatus));
     }
-
     function applyFilters(){
       const c = normalizeKey(document.getElementById("f-cliente").value);
       const p = normalizeKey(document.getElementById("f-proyecto").value);
       const o = normalizeKey(document.getElementById("f-owner").value);
       const e = normalizeKey(document.getElementById("f-estatus").value);
-
       VIEW = RAW.filter(r=>{
         const okC = !c || normalizeKey(r.cliente)  === c;
         const okP = !p || normalizeKey(r.proyecto) === p;
@@ -186,29 +197,63 @@
         const okE = !e || normalizeKey(r.estatus)  === e;
         return okC && okP && okO && okE;
       });
-
-      renderKPIs();
-      renderFilters();
-      renderCharts();
-      renderTable();
+      renderKPIs(); renderFilters(); renderCharts(); renderTable();
     }
 
-    // ==================  GRÁFICOS  ==================
+    /* ================== Gráficos ================== */
     function renderCharts(){
-      // Pie por Estatus
-      const byEstatus = {};
-      VIEW.forEach(r=>{ const k = r.estatus || "Sin estatus"; byEstatus[k] = (byEstatus[k]||0)+1; });
-      const estatusLabels = Object.keys(byEstatus);
-      const estatusCounts = estatusLabels.map(k=>byEstatus[k]);
+      // Categorización de estatus con regla de "Atrasado"
+      // Paleta fija:
+      const COLORS = {
+        "Finalizado": "#1f77b4",          // azul
+        "Iniciado en Plazo": "#2ca02c",   // verde
+        "No iniciado": "#ffbf00",         // amarillo
+        "On Hold": "#ff7f0e",             // naranjo
+        "Atrasado": "#d62728",            // rojo
+        "Otros": "#9e9e9e"                // gris
+      };
+
+      const hoy = today0().getTime();
+      const buckets = { "Finalizado":0, "Iniciado en Plazo":0, "No iniciado":0, "On Hold":0, "Atrasado":0, "Otros":0 };
+
+      VIEW.forEach(r=>{
+        const est = (r.estatus||"").trim();
+        const keyNorm = normalizeKey(est);
+        let cat = "Otros";
+
+        if (isFinalizado(est)) {
+          cat = "Finalizado";
+        } else if (isOnHold(est)) {
+          cat = "On Hold";
+        } else if (keyNorm === "iniciado en plazo" || keyNorm === "iniciadoenplazo" || keyNorm === "en plazo" || keyNorm==="enplazo" || keyNorm==="iniciado") {
+          cat = "Iniciado en Plazo";
+        } else if (keyNorm === "no iniciado" || keyNorm === "noiniciado" || keyNorm === "pendiente" ) {
+          cat = "No iniciado";
+        } else if (keyNorm === "atrasado") {
+          cat = "Atrasado";
+        }
+
+        // Regla adicional de "Atrasado" por deadline vencido y no finalizado:
+        if (!isFinalizado(est) && r.deadline && r.deadline.getTime() < hoy) {
+          cat = "Atrasado";
+        }
+
+        buckets[cat] = (buckets[cat] || 0) + 1;
+      });
+
+      const desiredOrder = ["Finalizado","Iniciado en Plazo","No iniciado","On Hold","Atrasado","Otros"];
+      const labels = desiredOrder.filter(k => buckets[k] > 0);
+      const counts = labels.map(l => buckets[l]);
+      const bg = labels.map(l => COLORS[l]);
 
       if (chEstatus) chEstatus.destroy();
       chEstatus = new Chart(document.getElementById("chEstatus"), {
         type: "pie",
-        data: { labels: estatusLabels, datasets: [{ data: estatusCounts }] },
+        data: { labels, datasets: [{ data: counts, backgroundColor: bg }] },
         options: { responsive:true }
       });
 
-      // Pie por Owner
+      // Pie por Owner (sin paleta fija)
       const byOwner = {};
       VIEW.forEach(r=>{ const k=r.owner||"Sin owner"; byOwner[k]=(byOwner[k]||0)+1; });
       const ownerLabels = Object.keys(byOwner);
@@ -222,29 +267,20 @@
       });
     }
 
-    // ==================  TABLA  ==================
+    /* ================== Tabla ================== */
     function renderTable(){
       const labels = ["Cliente","Proyecto","Tipo","Estatus","Owner","Deadline"];
       const thead = document.querySelector("#tbl thead");
       const tbody = document.querySelector("#tbl tbody");
       thead.innerHTML = "<tr>" + labels.map(l=>`<th>${l}</th>`).join("") + "</tr>";
-
       tbody.innerHTML = VIEW.map(r=>{
-        const cells = [
-          r.cliente,
-          r.proyecto,
-          r.tipo,
-          r.estatus,
-          r.owner,
-          r.deadline ? r.deadline.toLocaleDateString() : ""
-        ];
+        const cells = [r.cliente, r.proyecto, r.tipo, r.estatus, r.owner, r.deadline ? r.deadline.toLocaleDateString() : ""];
         return "<tr>" + cells.map(c=>`<td>${c??""}</td>`).join("") + "</tr>";
       }).join("");
-
       document.getElementById("count").textContent = `${VIEW.length} fila(s)`;
     }
 
-    // ==================  CARGA EXCEL (+ hard cap por cliente en URL)  ==================
+    /* ================== Carga Excel (+ hard cap por cliente en URL) ================== */
     async function loadExcel(){
       const res = await fetch(EXCEL_FILE);
       if(!res.ok){ alert("No pude cargar el Excel"); return; }
@@ -255,16 +291,13 @@
 
       RAW = raw.map(normalizeRow);
 
-      // Hard cap por cliente vía URL
-      const clientesParam = parseClienteParam(); // array normalizado o null
+      // Hard cap por cliente vía URL (vista por cliente = pública)
+      const clientesParam = parseClienteParam();
       if (clientesParam && clientesParam.length) {
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
-
-        // Fijar y bloquear filtro Cliente para la UI
         queueMicrotask(() => {
           const fc = document.getElementById('f-cliente');
           if (fc) {
-            // Si hay varios clientes en la URL, mostramos "Cliente (filtrado)"
             const label = (uniqueSorted(RAW.map(x=>x.cliente)).join(', ')) || clienteParamRaw || "Cliente";
             fc.innerHTML = `<option>${label}</option>`;
             fc.value = label;
@@ -274,20 +307,71 @@
       }
 
       VIEW = [...RAW];
-
-      renderKPIs();
-      renderFilters();
-      renderCharts();
-      renderTable();
+      renderKPIs(); renderFilters(); renderCharts(); renderTable();
     }
+
+    /* ================== Gate de contraseña SOLO para vista general ================== */
+    async function checkPassword(inputPassword) {
+      const enc = new TextEncoder().encode(inputPassword);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+      return hashHex === GENERAL_VIEW_HASH;
+    }
+
+    function shouldRequirePassword(){
+      const c = parseClienteParam();
+      return !c || c.length === 0;
+    }
+
+    function showPasswordOverlay(){
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay';
+      overlay.innerHTML = `
+        <div class="dialog" id="dlg">
+          <h2>Acceso</h2>
+          <p>Ingresa la clave para ver la vista general.</p>
+          <input type="password" id="pwd" placeholder="Clave" />
+          <button id="btn">Ingresar</button>
+          <div class="error" id="err">Clave incorrecta</div>
+        </div>`;
+      document.body.appendChild(overlay);
+
+      const dlg = document.getElementById('dlg');
+      const input = document.getElementById('pwd');
+      const btn = document.getElementById('btn');
+      const err = document.getElementById('err');
+
+      async function attempt(){
+        const ok = await checkPassword(input.value);
+        if(ok){
+          sessionStorage.setItem(SESSION_FLAG, "1");
+          document.body.removeChild(overlay);
+          loadExcel();
+        }else{
+          err.style.display = 'block';
+          dlg.classList.remove('shake'); void dlg.offsetWidth; dlg.classList.add('shake');
+          input.focus(); input.select();
+        }
+      }
+      btn.addEventListener('click', attempt);
+      input.addEventListener('keydown', e=>{ if(e.key==='Enter') attempt(); });
+      input.focus();
+    }
+
+    (function init(){
+      if (shouldRequirePassword()){
+        if (sessionStorage.getItem(SESSION_FLAG) === "1"){ loadExcel(); }
+        else { showPasswordOverlay(); }
+      } else {
+        loadExcel();
+      }
+    })();
 
     // Eventos filtros
     ["f-cliente","f-proyecto","f-owner","f-estatus"].forEach(id=>{
       document.getElementById(id).addEventListener("change", applyFilters);
     });
-
-    // Init
-    loadExcel();
   </script>
 </body>
 </html>
