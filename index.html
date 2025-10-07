@@ -7,11 +7,7 @@
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
     .wrap{max-width:1200px;margin:32px auto;padding:0 16px}
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:12px;margin-bottom:16px
-    }
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
     .card{border:1px solid #e5e7eb;border-radius:12px;padding:14px}
     .card h3{margin:0 0 6px 0;font-size:14px;font-weight:600;opacity:.7}
     .card .v{font-size:22px;font-weight:700}
@@ -23,14 +19,9 @@
     th{background:#fafafa;text-align:left}
     .muted{opacity:.65}
     @media (max-width:900px){.grid{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}}
-
-    /* ===== Overlay de acceso (solo vista general) ===== */
-    .overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999
-    }
-    .dialog{
-      width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 20px 50px rgba(0,0,0,.15)
-    }
+    /* Overlay acceso (solo vista general) */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
+    .dialog{width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 20px 50px rgba(0,0,0,.15)}
     .dialog h2{margin:0 0 8px 0;font-size:18px}
     .dialog p{margin:0 0 14px 0;font-size:14px;opacity:.8}
     .dialog input{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px}
@@ -82,12 +73,12 @@
   <script>
     /* ================== CONFIG ================== */
     const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
-
-    // Clave cifrada (SHA-256) para vista general: "Tomi.2016"
+    // Clave cifrada (SHA-256) de "Tomi.2016"
     const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746";
     const SESSION_FLAG = "dashboard_auth_ok";
+    const SESSION_ALLOWED_CLIENTS = "allowed_clients"; // <— anclaje por pestaña
 
-    /* ================== MAPEOS (ajusta si tus columnas se llaman distinto) ================== */
+    /* ================== MAPEOS ================== */
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
@@ -97,7 +88,7 @@
       deadline:  ["Deadline","Fecha Limite","Fecha Límite","Vencimiento","Due Date"]
     };
 
-    /* ================== URL params / normalización ================== */
+    /* ================== URL / normalización ================== */
     const urlParams = new URLSearchParams(window.location.search);
     const clienteParamRaw = urlParams.get('cliente'); // admite "A,B,C"
     const normalizeKey = (s) => (s ?? "").toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -110,26 +101,19 @@
     const normStr = (s) => (s ?? "").toString().trim();
     const toDate  = (v) => {
       if (!v && v!==0) return null;
-      try {
-        if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
-        const d = new Date(v); return isNaN(d)?null:d;
-      } catch { return null; }
+      try { if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
+            const d = new Date(v); return isNaN(d)?null:d; } catch { return null; }
     };
     const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
     const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
-
-    const isFinalizado = (txt) => {
-      const t = normalizeKey(txt);
-      return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada";
-    };
-    const isOnHold = (txt) => normalizeKey(txt) === "on hold" || normalizeKey(txt) === "onhold";
-
+    const isFinalizado = (txt) => { const t = normalizeKey(txt); return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada"; };
+    const isOnHold = (txt) => { const t=normalizeKey(txt); return t==="on hold"||t==="onhold"; };
     function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
     function normalizeRow(r){
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(), // "proyecto"
+        tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
         deadline:  toDate(pick(r, FIELD_MAP.deadline)),
@@ -145,20 +129,16 @@
     function renderKPIs(){
       const clientes = uniqueSorted(VIEW.map(r=>r.cliente)).length;
 
-      // Proyectos activos: contar NOMBRES de proyecto distintos con tipo = "proyecto"
-      const proyectosSet = new Set(
-        VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean)
-      );
+      // Distintos proyectos con tipo = "proyecto"
+      const proyectosSet = new Set(VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean));
       const proyectosActivos = proyectosSet.size;
 
-      // Tareas pendientes: estatus distinto de "Finalizado"
       const pendientes = VIEW.filter(r => !isFinalizado(r.estatus)).length;
 
-      // Tareas vencidas: no finalizado y deadline < hoy
       const hoy = today0().getTime();
       const vencidas = VIEW.filter(r => !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy).length;
 
-      // Tareas On Hold: estatus "On Hold" O falta Deadline/Owner/Estatus
+      // On Hold o falta información clave
       const onHold = VIEW.filter(r => {
         const faltaInfo = !(r.deadline) || !(r.estatus) || !(r.owner);
         return isOnHold(r.estatus) || faltaInfo;
@@ -202,17 +182,14 @@
 
     /* ================== Gráficos ================== */
     function renderCharts(){
-      // Categorización de estatus con regla de "Atrasado"
-      // Paleta fija:
       const COLORS = {
         "Finalizado": "#1f77b4",          // azul
         "Iniciado en Plazo": "#2ca02c",   // verde
         "No iniciado": "#ffbf00",         // amarillo
         "On Hold": "#ff7f0e",             // naranjo
         "Atrasado": "#d62728",            // rojo
-        "Otros": "#9e9e9e"                // gris
+        "Otros": "#9e9e9e"
       };
-
       const hoy = today0().getTime();
       const buckets = { "Finalizado":0, "Iniciado en Plazo":0, "No iniciado":0, "On Hold":0, "Atrasado":0, "Otros":0 };
 
@@ -221,24 +198,16 @@
         const keyNorm = normalizeKey(est);
         let cat = "Otros";
 
-        if (isFinalizado(est)) {
-          cat = "Finalizado";
-        } else if (isOnHold(est)) {
-          cat = "On Hold";
-        } else if (keyNorm === "iniciado en plazo" || keyNorm === "iniciadoenplazo" || keyNorm === "en plazo" || keyNorm==="enplazo" || keyNorm==="iniciado") {
-          cat = "Iniciado en Plazo";
-        } else if (keyNorm === "no iniciado" || keyNorm === "noiniciado" || keyNorm === "pendiente" ) {
-          cat = "No iniciado";
-        } else if (keyNorm === "atrasado") {
-          cat = "Atrasado";
-        }
+        if (isFinalizado(est)) cat = "Finalizado";
+        else if (isOnHold(est)) cat = "On Hold";
+        else if (keyNorm==="iniciado en plazo"||keyNorm==="iniciadoenplazo"||keyNorm==="en plazo"||keyNorm==="enplazo"||keyNorm==="iniciado") cat = "Iniciado en Plazo";
+        else if (keyNorm==="no iniciado"||keyNorm==="noiniciado"||keyNorm==="pendiente") cat = "No iniciado";
+        else if (keyNorm==="atrasado") cat = "Atrasado";
 
-        // Regla adicional de "Atrasado" por deadline vencido y no finalizado:
-        if (!isFinalizado(est) && r.deadline && r.deadline.getTime() < hoy) {
-          cat = "Atrasado";
-        }
+        // Atrasado por deadline vencido y no finalizado
+        if (!isFinalizado(est) && r.deadline && r.deadline.getTime() < hoy) cat = "Atrasado";
 
-        buckets[cat] = (buckets[cat] || 0) + 1;
+        buckets[cat] = (buckets[cat]||0)+1;
       });
 
       const desiredOrder = ["Finalizado","Iniciado en Plazo","No iniciado","On Hold","Atrasado","Otros"];
@@ -253,18 +222,13 @@
         options: { responsive:true }
       });
 
-      // Pie por Owner (sin paleta fija)
+      // Owner
       const byOwner = {};
       VIEW.forEach(r=>{ const k=r.owner||"Sin owner"; byOwner[k]=(byOwner[k]||0)+1; });
       const ownerLabels = Object.keys(byOwner);
       const ownerCounts = ownerLabels.map(k=>byOwner[k]);
-
       if (chOwner) chOwner.destroy();
-      chOwner = new Chart(document.getElementById("chOwner"), {
-        type: "pie",
-        data: { labels: ownerLabels, datasets: [{ data: ownerCounts }] },
-        options: { responsive:true }
-      });
+      chOwner = new Chart(document.getElementById("chOwner"), { type: "pie", data: { labels: ownerLabels, datasets: [{ data: ownerCounts }] }, options: { responsive:true } });
     }
 
     /* ================== Tabla ================== */
@@ -280,7 +244,7 @@
       document.getElementById("count").textContent = `${VIEW.length} fila(s)`;
     }
 
-    /* ================== Carga Excel (+ hard cap por cliente en URL) ================== */
+    /* ================== Carga Excel (+ hard cap y anclaje de cliente) ================== */
     async function loadExcel(){
       const res = await fetch(EXCEL_FILE);
       if(!res.ok){ alert("No pude cargar el Excel"); return; }
@@ -291,10 +255,13 @@
 
       RAW = raw.map(normalizeRow);
 
-      // Hard cap por cliente vía URL (vista por cliente = pública)
       const clientesParam = parseClienteParam();
       if (clientesParam && clientesParam.length) {
+        // Hard cap
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
+        // Guardar anclaje de cliente(s) en esta pestaña
+        sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
+        // Bloquear filtro Cliente en la UI
         queueMicrotask(() => {
           const fc = document.getElementById('f-cliente');
           if (fc) {
@@ -310,20 +277,18 @@
       renderKPIs(); renderFilters(); renderCharts(); renderTable();
     }
 
-    /* ================== Gate de contraseña SOLO para vista general ================== */
-    async function checkPassword(inputPassword) {
+    /* ================== Password (solo vista general) ================== */
+    async function checkPassword(inputPassword){
       const enc = new TextEncoder().encode(inputPassword);
       const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
       return hashHex === GENERAL_VIEW_HASH;
     }
-
     function shouldRequirePassword(){
       const c = parseClienteParam();
       return !c || c.length === 0;
     }
-
     function showPasswordOverlay(){
       const overlay = document.createElement('div');
       overlay.className = 'overlay';
@@ -359,7 +324,20 @@
       input.focus();
     }
 
+    /* ================== Init con anclaje de cliente ================== */
     (function init(){
+      const clientesParam = parseClienteParam();
+      const saved = sessionStorage.getItem(SESSION_ALLOWED_CLIENTS);
+
+      // Si no hay ?cliente= pero en esta pestaña ya se había fijado uno, reponerlo y salir
+      if ((!clientesParam || !clientesParam.length) && saved) {
+        const arr = JSON.parse(saved);
+        const base = window.location.origin + window.location.pathname;
+        const q = "cliente=" + arr.map(encodeURIComponent).join(",");
+        window.location.replace(base + "?" + q);
+        return;
+      }
+
       if (shouldRequirePassword()){
         if (sessionStorage.getItem(SESSION_FLAG) === "1"){ loadExcel(); }
         else { showPasswordOverlay(); }
