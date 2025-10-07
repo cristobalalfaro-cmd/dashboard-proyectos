@@ -524,5 +524,48 @@ function render(){
 populateFilters();
 render();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+async function loadExcel() {
+  const response = await fetch('Template_Proyectos_Dashboard.xlsx');
+  const arrayBuffer = await response.arrayBuffer();
+  const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+
+  // Lee la primera hoja
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+  const data = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+  // Muestra los datos en la consola
+  console.log('Datos del Excel:', data);
+
+  // Ejemplo: muestra en una tabla
+  const table = document.createElement('table');
+  table.border = '1';
+  const headerRow = document.createElement('tr');
+
+  Object.keys(data[0]).forEach(col => {
+    const th = document.createElement('th');
+    th.textContent = col;
+    headerRow.appendChild(th);
+  });
+  table.appendChild(headerRow);
+
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    Object.values(row).forEach(val => {
+      const td = document.createElement('td');
+      td.textContent = val;
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+
+  document.body.appendChild(table);
+}
+
+loadExcel();
+</script>
+
 </body>
 </html>
