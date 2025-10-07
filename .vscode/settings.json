@@ -1,0 +1,13 @@
+{
+    // Live Server
+    "liveServer.settings.port": 5501,
+    "liveServer.settings.host": "127.0.0.1",
+    "liveServer.settings.CustomBrowser": "chrome",
+    "liveServer.settings.open": "/index.html",
+    "liveServer.settings.wait": 200,                 // pequeño delay para evitar recargas dobles
+    "liveServer.settings.fullReload": true,
+
+    // Calidad de vida
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 500
+}

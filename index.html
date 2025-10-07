@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard de Gestión de Proyectos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+  <style>
+    :root {
+      --bg: #0f172a;           /* slate-900 */
+      --panel: #111827;        /* gray-900 */
+      --panel-2: #0b1220;      /* blue-gray mix */
+      --text: #e5e7eb;         /* gray-200 */
+      --muted: #9ca3af;        /* gray-400 */
+      --accent: #38bdf8;       /* sky-400 */
+      --success: #22c55e;      /* green-500 */
+      --warning: #f59e0b;      /* amber-500 */
+      --danger: #ef4444;       /* red-500 */
+      --card: #0b1020;
+      --chip: #1f2937;         /* gray-800 */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 24px; background: radial-gradient(1200px 800px at 80% -10%, #1d2a46 0%, var(--bg) 60%);
+      color: var(--text); font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial; letter-spacing: .2px;
+    }
+    header {
+      display: grid; gap: 12px; margin-bottom: 20px;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+    .title { font-weight: 700; font-size: clamp(20px, 2.5vw, 28px); }
+    .subtitle { color: var(--muted); font-weight: 500; }
+    .bar {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    }
+    .chip {
+      background: var(--chip); border: 1px solid #263143; padding: 10px 14px; border-radius: 999px; color: var(--text);
+      box-shadow: var(--shadow);
+    }
+    .grid {
+      display: grid; gap: 16px; grid-template-columns: repeat(12, 1fr);
+    }
+    .card {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--card) 100%);
+      border: 1px solid #1f2a44; border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .kpi {
+      display: grid; gap: 8px; grid-template-columns: auto 1fr; align-items: center;
+    }
+    .kpi .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .kpi h3 { margin: 0; font-size: 13px; color: var(--muted); font-weight: 600; }
+    .kpi p { margin: 0; font-size: 24px; font-weight: 700; }
+
+    .filters { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .filters .field { display: grid; gap: 6px; }
+    .filters label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .filters select, .filters input, .filters button {
+      background: #0f172a; border: 1px solid #263143; color: var(--text); padding: 10px 12px; border-radius: 12px; font-weight: 600;
+    }
+    .filters button.primary { background: #0b1327; border-color: #2b3a5a; }
+    .filters button.primary:hover { background: #0d1935; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #1e293b; font-size: 13px; }
+    th { text-align: left; color: var(--muted); font-weight: 700; cursor: pointer; user-select: none; }
+    tr:hover td { background: #0b1220; }
+    .status { padding: 6px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+    .s-ontrack { background: rgba(34,197,94,.15); color: var(--success); border: 1px solid rgba(34,197,94,.3); }
+    .s-risk { background: rgba(245,158,11,.13); color: var(--warning); border: 1px solid rgba(245,158,11,.3); }
+    .s-late { background: rgba(239,68,68,.12); color: var(--danger); border: 1px solid rgba(239,68,68,.3); }
+    .progress {
+      background: #0f172a; border: 1px solid #263143; border-radius: 999px; height: 8px; overflow: hidden; position: relative;
+    }
+    .progress > span { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, #3b82f6, var(--accent)); }
+
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions button { background: #0f172a; border: 1px solid #263143; color: var(--text); padding: 8px 12px; border-radius: 10px; font-weight: 600; }
+    .actions button:hover { background: #101a31; }
+    .right { text-align: right; }
+
+    .footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 12px; }
+    .tag { background: #0f172a; border: 1px solid #263143; padding: 6px 8px; border-radius: 8px; font-size: 11px; color: var(--muted); }
+
+    @media (max-width: 1100px) {
+      .filters { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="title">Dashboard de Gestión de Proyectos</div>
+      <div class="subtitle">Control de portafolio • Avance • Presupuesto • Riesgo</div>
+    </div>
+    <div class="bar">
+      <span class="chip" id="clock">—</span>
+      <span class="chip">TZ: America/Santiago</span>
+    </div>
+  </header>
+
+  <section class="grid" style="margin-bottom: 10px;">
+    <!-- KPIs -->
+    <div class="card" style="grid-column: span 3;">
+      <div class="kpi"><span class="dot" style="background: var(--accent);"></span><h3>Total Proyectos</h3></div>
+      <p id="kpi-total">0</p>
+    </div>
+    <div class="card" style="grid-column: span 3;">
+      <div class="kpi"><span class="dot" style="background: var(--success);"></span><h3>En Ruta</h3></div>
+      <p id="kpi-ontrack">0</p>
+    </div>
+    <div class="card" style="grid-column: span 3;">
+      <div class="kpi"><span class="dot" style="background: var(--warning);"></span><h3>En Riesgo</h3></div>
+      <p id="kpi-risk">0</p>
+    </div>
+    <div class="card" style="grid-column: span 3;">
+      <div class="kpi"><span class="dot" style="background: var(--danger);"></span><h3>Atrasados</h3></div>
+      <p id="kpi-late">0</p>
+    </div>
+  </section>
+
+  <!-- Filtros -->
+  <section class="card" style="margin-bottom: 16px;">
+    <div class="filters">
+      <div class="field">
+        <label>Propietario</label>
+        <select id="f-owner"><option value="">Todos</option></select>
+      </div>
+      <div class="field">
+        <label>Cliente</label>
+        <select id="f-client"><option value="">Todos</option></select>
+      </div>
+      <div class="field">
+        <label>Fase</label>
+        <select id="f-phase"><option value="">Todas</option><option>Levantamiento</option><option>Diseño</option><option>Implementación</option><option>Seguimiento</option></select>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="f-status"><option value="">Todos</option><option>On Track</option><option>En Riesgo</option><option>Atrasado</option></select>
+      </div>
+      <div class="field">
+        <label>Mes (Inicio)</label>
+        <input id="f-month" type="month" />
+      </div>
+      <div class="field" style="align-self:end;">
+        <div class="actions">
+          <button class="primary" id="btn-apply">Aplicar</button>
+          <button id="btn-reset">Limpiar</button>
+          <button id="btn-import">Importar CSV</button>
+          <input type="file" id="file" accept=".csv" style="display:none;" />
+          <button id="btn-export">Exportar CSV</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts -->
+  <section class="grid" style="margin-bottom: 16px;">
+    <div class="card" style="grid-column: span 6;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <h3 style="margin:0;font-size:14px;color:var(--muted);">Proyectos por Fase</h3>
+        <span class="tag" id="tag-count-phase">—</span>
+      </div>
+      <canvas id="chartPhase" height="160"></canvas>
+    </div>
+    <div class="card" style="grid-column: span 6;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <h3 style="margin:0;font-size:14px;color:var(--muted);">Distribución por Estado</h3>
+        <span class="tag" id="tag-count-status">—</span>
+      </div>
+      <canvas id="chartStatus" height="160"></canvas>
+    </div>
+  </section>
+
+  <!-- Tabla -->
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <h3 style="margin:0;font-size:14px;color:var(--muted);">Portafolio</h3>
+      <div class="actions">
+        <button id="btn-add">+ Proyecto</button>
+      </div>
+    </div>
+    <div style="overflow:auto;">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-sort="name">Proyecto ▾</th>
+            <th data-sort="client">Cliente</th>
+            <th data-sort="owner">Propietario</th>
+            <th data-sort="phase">Fase</th>
+            <th data-sort="status">Estado</th>
+            <th data-sort="start">Inicio</th>
+            <th data-sort="end">Fin</th>
+            <th data-sort="progress" class="right">% Avance</th>
+            <th data-sort="budget" class="right">Presupuesto</th>
+            <th data-sort="spent" class="right">Gastado</th>
+            <th class="right">Var. Presupuesto</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="footer">Hecho con ❤️ en VS Code • Los datos se guardan en tu navegador (LocalStorage). Usa Importar/Exportar para moverlos.</p>
+
+<script>
+// ======= Modelo de datos =======
+// Campos: id, name, client, owner, phase, status, start, end, progress (0-100), budget, spent
+const seed = [
+  { id: cid(), name: 'Implementación PMO – CR2', client: 'CR2', owner: 'Cristóbal', phase: 'Implementación', status: 'On Track', start: '2025-09-01', end: '2025-12-15', progress: 55, budget: 18000000, spent: 8200000 },
+  { id: cid(), name: 'Kick Off Data Champions – Schilling', client: 'Ópticas Schilling', owner: 'María Teresa', phase: 'Levantamiento', status: 'En Riesgo', start: '2025-09-10', end: '2025-10-20', progress: 35, budget: 6000000, spent: 3800000 },
+  { id: cid(), name: 'CST Report – Nobel Biocare', client: 'Nobel Biocare', owner: 'Cristóbal', phase: 'Seguimiento', status: 'On Track', start: '2025-08-01', end: '2025-11-30', progress: 68, budget: 9500000, spent: 7200000 },
+  { id: cid(), name: 'Manual Instructores – Komatsu', client: 'Komatsu', owner: 'Evans', phase: 'Diseño', status: 'Atrasado', start: '2025-07-15', end: '2025-09-30', progress: 52, budget: 12500000, spent: 9900000 },
+  { id: cid(), name: 'Inducción – Promet Hotelería', client: 'Promet', owner: 'Cristóbal', phase: 'Implementación', status: 'On Track', start: '2025-09-05', end: '2025-10-25', progress: 61, budget: 5000000, spent: 2100000 },
+];
+
+const LS_KEY = 'projects-dashboard-v1';
+const state = {
+  projects: loadLS(LS_KEY) || seed,
+  sort: { field: 'name', dir: 'asc' },
+  filter: { owner: '', client: '', phase: '', status: '', month: '' },
+  charts: { phase: null, status: null }
+};
+saveLS(LS_KEY, state.projects);
+
+// ======= Utilidades =======
+function cid(){ return 'p_' + Math.random().toString(36).slice(2,9); }
+function fmtMoney(n){ return new Intl.NumberFormat('es-CL', { style:'currency', currency:'CLP', maximumFractionDigits: 0 }).format(n||0); }
+function fmtDate(s){ if(!s) return ''; const d = new Date(s+'T00:00:00'); return d.toLocaleDateString('es-CL'); }
+function loadLS(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function saveLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function unique(arr, key){ return [...new Set(arr.map(o => o[key]).filter(Boolean))]; }
+function by(a,b){ return a===b?0:(a>b?1:-1); }
+
+// ======= Reloj =======
+function tick(){ const now = new Date(); const fmt = new Intl.DateTimeFormat('es-CL',{ dateStyle:'medium', timeStyle:'short', timeZone:'America/Santiago' });
+  document.getElementById('clock').textContent = fmt.format(now);
+}
+setInterval(tick, 1000); tick();
+
+// ======= Filtros =======
+const fOwner = document.getElementById('f-owner');
+const fClient = document.getElementById('f-client');
+const fPhase  = document.getElementById('f-phase');
+const fStatus = document.getElementById('f-status');
+const fMonth  = document.getElementById('f-month');
+
+function populateFilters(){
+  const ps = state.projects;
+  fillSelect(fOwner, unique(ps,'owner'));
+  fillSelect(fClient, unique(ps,'client'));
+}
+function fillSelect(sel, options){
+  const current = sel.value;
+  sel.querySelectorAll('option:not([value=""])').forEach(o=>o.remove());
+  options.sort().forEach(v=>{ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+  sel.value = current;
+}
+
+// ======= Tabla =======
+const tbody = document.querySelector('#tbl tbody');
+const thead = document.querySelectorAll('#tbl thead th[data-sort]');
+
+thead.forEach(th=> th.addEventListener('click', ()=>{
+  const field = th.dataset.sort;
+  const dir = (state.sort.field===field && state.sort.dir==='asc') ? 'desc' : 'asc';
+  state.sort = { field, dir };
+  render();
+}));
+
+function filtered(){
+  return state.projects.filter(p=>{
+    const { owner, client, phase, status, month } = state.filter;
+    const okOwner = !owner || p.owner===owner;
+    const okClient = !client || p.client===client;
+    const okPhase = !phase || p.phase===phase;
+    const okStatus = !status || p.status===status;
+    const okMonth = !month || (p.start?.slice(0,7)===month);
+    return okOwner && okClient && okPhase && okStatus && okMonth;
+  });
+}
+
+function variance(p){ return (p.budget||0) - (p.spent||0); }
+
+function renderTable(list){
+  tbody.innerHTML = '';
+  list.forEach(p=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.name}</td>
+      <td>${p.client||''}</td>
+      <td>${p.owner||''}</td>
+      <td>${p.phase||''}</td>
+      <td>${statusPill(p.status)}</td>
+      <td>${fmtDate(p.start)}</td>
+      <td>${fmtDate(p.end)}</td>
+      <td class="right"><div class="progress"><span style="width:${p.progress||0}%"></span></div> <span style="font-size:11px;color:var(--muted);">${p.progress||0}%</span></td>
+      <td class="right">${fmtMoney(p.budget)}</td>
+      <td class="right">${fmtMoney(p.spent)}</td>
+      <td class="right" title="Presupuesto - Gastado">${fmtMoney(variance(p))}</td>
+      <td>
+        <div class="actions">
+          <button onclick="editProject('${p.id}')">Editar</button>
+          <button onclick="delProject('${p.id}')">Eliminar</button>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  })
+}
+
+function statusPill(s){
+  const cls = s==='On Track'?'s-ontrack': s==='En Riesgo'?'s-risk':'s-late';
+  return `<span class="status ${cls}">${s||''}</span>`;
+}
+
+// ======= Orden =======
+function sortList(list){
+  const { field, dir } = state.sort;
+  const m = dir==='asc'?1:-1;
+  return [...list].sort((a,b)=>{
+    let va=a[field], vb=b[field];
+    if(field==='budget'||field==='spent'||field==='progress'){ va=Number(va)||0; vb=Number(vb)||0; }
+    return by(va, vb)*m;
+  });
+}
+
+// ======= KPIs =======
+function renderKPIs(list){
+  const total = list.length;
+  const ontrack = list.filter(p=>p.status==='On Track').length;
+  const risk = list.filter(p=>p.status==='En Riesgo').length;
+  const late = list.filter(p=>p.status==='Atrasado').length;
+  document.getElementById('kpi-total').textContent = total;
+  document.getElementById('kpi-ontrack').textContent = ontrack;
+  document.getElementById('kpi-risk').textContent = risk;
+  document.getElementById('kpi-late').textContent = late;
+}
+
+// ======= Charts =======
+function renderCharts(list){
+  const ctxPhase = document.getElementById('chartPhase');
+  const ctxStatus = document.getElementById('chartStatus');
+
+  const byPhase = groupCount(list, 'phase');
+  const byStatus = groupCount(list, 'status');
+
+  document.getElementById('tag-count-phase').textContent = `${list.length} proyectos`;
+  document.getElementById('tag-count-status').textContent = `${list.length} proyectos`;
+
+  const phaseLabels = Object.keys(byPhase);
+  const phaseData = Object.values(byPhase);
+  const statusLabels = Object.keys(byStatus);
+  const statusData = Object.values(byStatus);
+
+  state.charts.phase?.destroy();
+  state.charts.status?.destroy();
+
+  state.charts.phase = new Chart(ctxPhase, {
+    type: 'bar',
+    data: { labels: phaseLabels, datasets: [{ label: 'Proyectos', data: phaseData }] },
+    options: { plugins: { legend: { display: false } }, scales: { x: { grid: { color:'#1f2a44' }}, y: { beginAtZero:true, grid:{ color:'#1f2a44' } } } }
+  });
+
+  state.charts.status = new Chart(ctxStatus, {
+    type: 'doughnut',
+    data: { labels: statusLabels, datasets: [{ data: statusData }] },
+    options: { plugins: { legend: { position:'bottom', labels:{ color:'#e5e7eb' } } } }
+  });
+}
+
+function groupCount(list, key){
+  return list.reduce((acc, it)=>{ const k = it[key]||'—'; acc[k] = (acc[k]||0)+1; return acc; },{});
+}
+
+// ======= CRUD =======
+function editProject(id){
+  const p = state.projects.find(x=>x.id===id);
+  const name = prompt('Nombre del proyecto', p.name); if(name===null) return;
+  const client = prompt('Cliente', p.client||''); if(client===null) return;
+  const owner = prompt('Propietario', p.owner||''); if(owner===null) return;
+  const phase = prompt('Fase (Levantamiento, Diseño, Implementación, Seguimiento)', p.phase||''); if(phase===null) return;
+  const status = prompt('Estado (On Track, En Riesgo, Atrasado)', p.status||''); if(status===null) return;
+  const start = prompt('Inicio (YYYY-MM-DD)', p.start||''); if(start===null) return;
+  const end = prompt('Fin (YYYY-MM-DD)', p.end||''); if(end===null) return;
+  const progress = Number(prompt('% Avance (0-100)', p.progress||0));
+  const budget = Number(prompt('Presupuesto CLP', p.budget||0));
+  const spent = Number(prompt('Gastado CLP', p.spent||0));
+  Object.assign(p,{ name, client, owner, phase, status, start, end, progress, budget, spent });
+  saveLS(LS_KEY, state.projects); render();
+}
+
+function delProject(id){
+  if(!confirm('¿Eliminar proyecto?')) return;
+  state.projects = state.projects.filter(p=>p.id!==id);
+  saveLS(LS_KEY, state.projects); render();
+}
+
+document.getElementById('btn-add').addEventListener('click', ()=>{
+  const name = prompt('Nombre del proyecto'); if(!name) return;
+  const client = prompt('Cliente')||'';
+  const owner = prompt('Propietario')||'';
+  const phase = prompt('Fase (Levantamiento, Diseño, Implementación, Seguimiento)')||'Levantamiento';
+  const status = prompt('Estado (On Track, En Riesgo, Atrasado)')||'On Track';
+  const start = prompt('Inicio (YYYY-MM-DD)')||'';
+  const end = prompt('Fin (YYYY-MM-DD)')||'';
+  const progress = Number(prompt('% Avance (0-100)')||0);
+  const budget = Number(prompt('Presupuesto CLP')||0);
+  const spent = Number(prompt('Gastado CLP')||0);
+  state.projects.push({ id: cid(), name, client, owner, phase, status, start, end, progress, budget, spent });
+  saveLS(LS_KEY, state.projects); render();
+});
+
+// ======= Import / Export CSV =======
+document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('file').click());
+document.getElementById('file').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const text = await file.text();
+  const rows = parseCSV(text);
+  // Espera encabezados que coincidan con las llaves del modelo
+  const map = rows.map(r=>({
+    id: r.id || cid(),
+    name: r.name || r.proyecto || r.Proyecto || '',
+    client: r.client || r.cliente || r.Cliente || '',
+    owner: r.owner || r.propietario || r.Owner || '',
+    phase: r.phase || r.fase || r.Fase || '',
+    status: r.status || r.estado || r.Estado || '',
+    start: normDate(r.start || r.inicio || r.Start || ''),
+    end: normDate(r.end || r.fin || r.End || ''),
+    progress: Number(r.progress || r.avance || 0),
+    budget: Number(r.budget || r.presupuesto || 0),
+    spent: Number(r.spent || r.gastado || 0),
+  }));
+  state.projects = dedupe([...state.projects, ...map]);
+  saveLS(LS_KEY, state.projects); populateFilters(); render();
+  e.target.value = '';
+});
+
+document.getElementById('btn-export').addEventListener('click', ()=>{
+  const list = filtered();
+  const header = ['id','name','client','owner','phase','status','start','end','progress','budget','spent'];
+  const lines = [header.join(',')].concat(list.map(p=> header.map(h=> csvSafe(p[h])).join(',')));
+  const blob = new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  a.href = url; a.download = `proyectos_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url);
+});
+
+function csvSafe(val){
+  const v = (val===undefined||val===null)?'':String(val);
+  if(/[",\n]/.test(v)) return '"'+v.replace(/"/g,'""')+'"';
+  return v;
+}
+
+function parseCSV(text){
+  // Parser CSV básico que maneja comillas y separadores
+  const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
+  if(lines.length===0) return [];
+  const headers = splitCSVLine(lines[0]).map(h=> h.trim().replace(/^\ufeff/, '').toLowerCase());
+  return lines.slice(1).map(line=>{
+    const cells = splitCSVLine(line);
+    const obj = {}; headers.forEach((h,i)=> obj[h] = (cells[i]||'').trim());
+    return obj;
+  });
+}
+function splitCSVLine(line){
+  const out=[]; let cur=''; let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){
+      if(inQ && line[i+1]==='"'){ cur+='"'; i++; }
+      else inQ=!inQ;
+    } else if(c===',' && !inQ){ out.push(cur); cur=''; }
+    else cur+=c;
+  }
+  out.push(cur); return out;
+}
+function normDate(s){
+  if(!s) return '';
+  // Admite dd/mm/yyyy, yyyy-mm-dd, dd-mm-yyyy
+  if(/\d{2}[\/\-]\d{2}[\/\-]\d{4}/.test(s)){
+    const [a,b,c] = s.includes('/')? s.split('/') : s.split('-');
+    const dd = a.length===4? c : a; // ya venía yyyy-dd-mm
+    const mm = b; const yyyy = a.length===4? a : c;
+    return `${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}`;
+  }
+  if(/\d{4}-\d{2}-\d{2}/.test(s)) return s;
+  return s;
+}
+function dedupe(arr){
+  const seen=new Set();
+  const out=[]; for(const it of arr){ if(seen.has(it.id)) continue; seen.add(it.id); out.push(it); }
+  return out;
+}
+
+// ======= Filtros acciones =======
+document.getElementById('btn-apply').addEventListener('click', ()=>{
+  state.filter = { owner: fOwner.value, client: fClient.value, phase: fPhase.value, status: fStatus.value, month: fMonth.value };
+  render();
+});
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  state.filter = { owner:'', client:'', phase:'', status:'', month:'' };
+  fOwner.value=''; fClient.value=''; fPhase.value=''; fStatus.value=''; fMonth.value='';
+  render();
+});
+
+// ======= Render principal =======
+function render(){
+  const list = sortList( filtered() );
+  renderKPIs(list);
+  renderTable(list);
+  renderCharts(list);
+  populateFilters();
+}
+
+populateFilters();
+render();
+</script>
+</body>
+</html>
