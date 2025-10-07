@@ -106,7 +106,8 @@
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
-      tarea:     ["Tarea","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
+      // <-- agrega "Tareas" como alias
+      tarea:     ["Tarea","Tareas","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
       tipo:      ["Tipo","Category"],
       estatus:   ["Estatus","Estado","Status"],
       owner:     ["Owner","Responsable","Asignado","Ejecutor"],
@@ -138,6 +139,8 @@
 
     function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
     function normalizeRow(r){
+      // Si viene "Tareas" en el JSON, mapear a "Tarea" antes de leer alias
+      if (r["Tareas"] && !r["Tarea"]) r["Tarea"] = r["Tareas"];
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
@@ -225,11 +228,11 @@
     /* ================== Gráficos ================== */
     function renderCharts(){
       const COLORS = {
-        "Finalizado": "#1f77b4",          // azul
-        "Iniciado en Plazo": "#2ca02c",   // verde
-        "No iniciado": "#ffbf00",         // amarillo
-        "On Hold": "#ff7f0e",             // naranjo
-        "Atrasado": "#d62728",            // rojo
+        "Finalizado": "#1f77b4",
+        "Iniciado en Plazo": "#2ca02c",
+        "No iniciado": "#ffbf00",
+        "On Hold": "#ff7f0e",
+        "Atrasado": "#d62728",
         "Otros": "#9e9e9e"
       };
       const hoy = today0().getTime();
@@ -246,7 +249,6 @@
         else if (keyNorm==="no iniciado"||keyNorm==="noiniciado"||keyNorm==="pendiente") cat = "No iniciado";
         else if (keyNorm==="atrasado") cat = "Atrasado";
 
-        // Atrasado por deadline vencido y no finalizado
         if (!isFinalizado(est) && r.deadline && r.deadline.getTime() < hoy) cat = "Atrasado";
 
         buckets[cat] = (buckets[cat]||0)+1;
@@ -264,7 +266,6 @@
         options: { responsive:true, plugins:{legend:{position:'bottom'}} }
       });
 
-      // Owner
       const byOwner = {};
       VIEW.forEach(r=>{ const k=r.owner||"Sin owner"; byOwner[k]=(byOwner[k]||0)+1; });
       const ownerLabels = Object.keys(byOwner);
@@ -278,7 +279,14 @@
     }
 
     /* ===== Gauge helpers ===== */
-    // Plugin para mostrar el % al centro
+    // Identificador robusto de TAREA:
+    // - si tipo === "tarea", o
+    // - si existe texto en el campo "tarea" (por ejemplo porque viene de hoja "Tareas" col. D)
+    function isTaskRow(r){
+      const t = (r.tipo || "").toLowerCase();
+      return t === "tarea" || (!!r.tarea && r.tarea.trim().length > 0);
+    }
+
     const GaugeTextPlugin = {
       id: 'gaugeText',
       afterDraw(chart) {
@@ -298,10 +306,10 @@
     };
 
     function getCompletionStats() {
-      const tasks = VIEW.filter(r => (r.tipo || '').toLowerCase() === 'tarea');
+      const tasks = VIEW.filter(isTaskRow);
       const total = tasks.length;
-      const done = tasks.filter(r => isFinalizado(r.estatus)).length;
-      const pct  = total ? Math.round((done * 100) / total) : 0;
+      const done  = tasks.filter(r => isFinalizado(r.estatus)).length;
+      const pct   = total ? Math.round((done * 100) / total) : 0;
       return { total, done, pct };
     }
 
@@ -327,20 +335,10 @@
         options: {
           responsive: true,
           cutout: '70%',
-          // Para semi-gauge, descomenta:
-          // rotation: -90,
-          // circumference: 180,
+          // rotation: -90, circumference: 180,  // <- descomenta para semi-gauge
           plugins: {
             legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (i) => {
-                  const label = i.label || '';
-                  const val = i.raw;
-                  return `${label}: ${val} (${pct}%)`;
-                }
-              }
-            }
+            tooltip: { callbacks: { label: (i) => `${i.label}: ${i.raw} (${pct}%)` } }
           }
         }
       });
@@ -349,7 +347,7 @@
     }
 
     /* ================== Ordenamiento para Detalle ================== */
-    let sortState = { key: null, dir: 1 }; // dir: 1 asc, -1 desc
+    let sortState = { key: null, dir: 1 };
     const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
     function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
     function cmpDate(a,b){ const ax = a ? a.getTime() : 0; const bx = b ? b.getTime() : 0; return ax - bx; }
@@ -360,14 +358,12 @@
       const thead = document.querySelector("#tbl thead");
       const tbody = document.querySelector("#tbl tbody");
 
-      // Encabezados ordenables
       thead.innerHTML = "<tr>" + labels.map((l, i) => {
         const active = SORT_KEYS[i] === sortState.key;
         const arrow  = active ? (sortState.dir === 1 ? "▲" : "▼") : "";
         return `<th class="sortable" data-col="${i}" data-sort="${arrow}">${l}</th>`;
       }).join("") + "</tr>";
 
-      // Copia y orden
       let rows = [...VIEW];
       if (sortState.key){
         const idx = SORT_KEYS.indexOf(sortState.key);
@@ -387,9 +383,8 @@
       const hoy = today0().getTime();
 
       tbody.innerHTML = rows.map(r=>{
-        // Regla de "tarea atrasada": tipo=tarea, no finalizado y deadline pasado
-        const isTask = (r.tipo||"").toLowerCase() === "tarea";
-        const overdue = isTask && !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy;
+        // Tarea atrasada = es tarea (según isTaskRow), no finalizada y deadline pasado
+        const overdue = isTaskRow(r) && !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy;
         const rowStyle = overdue ? 'style="color:#d62728"' : '';
 
         const cells = [
@@ -406,7 +401,6 @@
 
       document.getElementById("count").textContent = `${rows.length} fila(s)`;
 
-      // Click para ordenar
       thead.querySelectorAll("th.sortable").forEach(th=>{
         th.addEventListener("click", () => {
           const col = Number(th.getAttribute("data-col"));
@@ -432,15 +426,20 @@
       // 1) A objetos por encabezados
       const rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
-      // 2) Si estamos en "Tareas", inyectar columna D como "Tarea" si faltara.
-      if (sheetName === "Tareas" && sheet["!ref"]) {
+      // 2) Fallbacks para nombre de tarea:
+      //   - si hoja es "Tareas", forzar columna D como "Tarea"
+      //   - si hay campo "Tareas", copiar a "Tarea"
+      if (sheet["!ref"]) {
         const range = XLSX.utils.decode_range(sheet["!ref"]);
         rowsObj.forEach((row, idx) => {
-          const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 base1, +1 encabezado
-          const cellAddr = "D" + excelRowNumber; // Columna D
-          const cell = sheet[cellAddr];
-          const valD = cell ? cell.v : "";
-          if (!row["Tarea"] && !row["tarea"] && valD !== undefined) row["Tarea"] = valD;
+          if (row["Tareas"] && !row["Tarea"]) row["Tarea"] = row["Tareas"];
+          if (sheetName === "Tareas") {
+            const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 base1, +1 encabezado
+            const cellAddr = "D" + excelRowNumber; // Columna D
+            const cell = sheet[cellAddr];
+            const valD = cell ? cell.v : "";
+            if (!row["Tarea"] && valD !== undefined) row["Tarea"] = valD;
+          }
         });
       }
 
@@ -450,7 +449,6 @@
       if (clientesParam && clientesParam.length) {
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
         sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
-        // Bloquear filtro Cliente
         queueMicrotask(() => {
           const fc = document.getElementById('f-cliente');
           if (fc) {
@@ -519,7 +517,6 @@
       const clientesParam = parseClienteParam();
       const saved = sessionStorage.getItem(SESSION_ALLOWED_CLIENTS);
 
-      // Si no hay ?cliente= pero ya estaba fijado en esta pestaña, reponerlo
       if ((!clientesParam || !clientesParam.length) && saved) {
         const arr = JSON.parse(saved);
         const base = window.location.origin + window.location.pathname;
@@ -543,3 +540,99 @@
   </script>
 </body>
 </html>
+name: Deploy dashboard to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'Template_Proyectos_Dashboard.xlsx'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # (Opcional) genera un "cache-buster" para evitar caché del Excel en CDNs
+      - name: Create cache-buster
+        run: |
+          date +%s > cache-bust.txt
+
+      # Sube todo el repo como artefacto para Pages (no hay build)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+name: Deploy dashboard to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'Template_Proyectos_Dashboard.xlsx'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # (Opcional) genera un "cache-buster" para evitar caché del Excel en CDNs
+      - name: Create cache-buster
+        run: |
+          date +%s > cache-bust.txt
+
+      # Sube todo el repo como artefacto para Pages (no hay build)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
