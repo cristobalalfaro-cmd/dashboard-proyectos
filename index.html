@@ -19,6 +19,7 @@
     th{background:#fafafa;text-align:left}
     .muted{opacity:.65}
     @media (max-width:900px){.grid{grid-template-columns:1fr}.filters{grid-template-columns:repeat(2,1fr)}}
+
     /* Overlay acceso (solo vista general) */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
     .dialog{width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 20px 50px rgba(0,0,0,.15)}
@@ -29,11 +30,24 @@
     .error{color:#b00020;font-size:13px;margin-top:8px;display:none}
     .shake{animation:shake .25s}
     @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+
+    /* Banner de cliente */
+    .banner{display:none;margin:0 0 12px 0;padding:10px 14px;border-radius:12px;border:1px solid #dbe4ff;background:#eef3ff;color:#0b3d91;font-weight:600}
+    .banner small{font-weight:500;opacity:.8;margin-left:8px}
+
+    /* Encabezados ordenables */
+    th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:20px}
+    th.sortable::after{
+      content: attr(data-sort);
+      position:absolute; right:6px; top:50%; transform:translateY(-50%);
+      font-size:12px; opacity:.6;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1 style="margin:0 0 8px 0">Dashboard de Proyectos</h1>
+    <div id="client-banner" class="banner"></div>
 
     <!-- KPIs -->
     <div class="kpis">
@@ -76,12 +90,13 @@
     // Clave cifrada (SHA-256) de "Tomi.2016"
     const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746";
     const SESSION_FLAG = "dashboard_auth_ok";
-    const SESSION_ALLOWED_CLIENTS = "allowed_clients"; // <— anclaje por pestaña
+    const SESSION_ALLOWED_CLIENTS = "allowed_clients";
 
     /* ================== MAPEOS ================== */
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
+      tarea:     ["Tarea","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
       tipo:      ["Tipo","Category"],
       estatus:   ["Estatus","Estado","Status"],
       owner:     ["Owner","Responsable","Asignado","Ejecutor"],
@@ -90,7 +105,7 @@
 
     /* ================== URL / normalización ================== */
     const urlParams = new URLSearchParams(window.location.search);
-    const clienteParamRaw = urlParams.get('cliente'); // admite "A,B,C"
+    const clienteParamRaw = urlParams.get('cliente');
     const normalizeKey = (s) => (s ?? "").toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     function parseClienteParam(){
       if(!clienteParamRaw) return null;
@@ -101,18 +116,22 @@
     const normStr = (s) => (s ?? "").toString().trim();
     const toDate  = (v) => {
       if (!v && v!==0) return null;
-      try { if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
-            const d = new Date(v); return isNaN(d)?null:d; } catch { return null; }
+      try {
+        if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
+        const d = new Date(v); return isNaN(d)?null:d;
+      } catch { return null; }
     };
     const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
     const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
     const isFinalizado = (txt) => { const t = normalizeKey(txt); return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada"; };
     const isOnHold = (txt) => { const t=normalizeKey(txt); return t==="on hold"||t==="onhold"; };
+
     function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
     function normalizeRow(r){
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
+        tarea:     normStr(pick(r, FIELD_MAP.tarea)),
         tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
@@ -125,12 +144,28 @@
     /* ================== Estado ================== */
     let RAW=[], VIEW=[], chEstatus, chOwner;
 
+    /* ================== Banner ================== */
+    function updateBanner() {
+      const banner = document.getElementById('client-banner');
+      const params = parseClienteParam();
+      if (params && params.length) {
+        const names = uniqueSorted(RAW.map(r => r.cliente)).filter(Boolean);
+        const label = names.length ? names.join(', ') : (clienteParamRaw || 'Cliente');
+        banner.innerHTML = `Vista restringida a: ${label} <small>(solo sus datos)</small>`;
+        banner.style.display = 'block';
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
     /* ================== KPIs ================== */
     function renderKPIs(){
       const clientes = uniqueSorted(VIEW.map(r=>r.cliente)).length;
 
-      // Distintos proyectos con tipo = "proyecto"
-      const proyectosSet = new Set(VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean));
+      // Proyectos activos: nombres distintos con tipo = "proyecto"
+      const proyectosSet = new Set(
+        VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean)
+      );
       const proyectosActivos = proyectosSet.size;
 
       const pendientes = VIEW.filter(r => !isFinalizado(r.estatus)).length;
@@ -138,11 +173,8 @@
       const hoy = today0().getTime();
       const vencidas = VIEW.filter(r => !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy).length;
 
-      // On Hold o falta información clave
-      const onHold = VIEW.filter(r => {
-        const faltaInfo = !(r.deadline) || !(r.estatus) || !(r.owner);
-        return isOnHold(r.estatus) || faltaInfo;
-      }).length;
+      // On Hold: estatus "On Hold" O falta Deadline/Estatus/Owner
+      const onHold = VIEW.filter(r => isOnHold(r.estatus) || !(r.deadline) || !(r.estatus) || !(r.owner)).length;
 
       document.getElementById("kpi-clientes").textContent   = fmt(clientes);
       document.getElementById("kpi-proyectos").textContent  = fmt(proyectosActivos);
@@ -231,37 +263,75 @@
       chOwner = new Chart(document.getElementById("chOwner"), { type: "pie", data: { labels: ownerLabels, datasets: [{ data: ownerCounts }] }, options: { responsive:true } });
     }
 
-    /* ================== Tabla ================== */
-   function renderTable(){
-  const labels = ["Cliente","Proyecto","Tipo","Estatus","Owner","Deadline"];
-  const thead = document.querySelector("#tbl thead");
-  const tbody = document.querySelector("#tbl tbody");
-  thead.innerHTML = "<tr>" + labels.map(l=>`<th>${l}</th>`).join("") + "</tr>";
+    /* ================== Ordenamiento para Detalle ================== */
+    let sortState = { key: null, dir: 1 }; // dir: 1 asc, -1 desc
+    const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
+    function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
+    function cmpDate(a,b){ const ax = a ? a.getTime() : 0; const bx = b ? b.getTime() : 0; return ax - bx; }
 
-  // Ordenar: primero proyectos, luego tareas (si las hay)
-  const ordered = [...VIEW].sort((a,b)=>{
-    if(a.tipo === b.tipo) return a.proyecto.localeCompare(b.proyecto);
-    return a.tipo === "proyecto" ? -1 : 1;
-  });
+    /* ================== Tabla (incluye columna Tarea + filas rojas atrasadas) ================== */
+    function renderTable(){
+      const labels = ["Cliente","Proyecto","Tarea","Tipo","Estatus","Owner","Deadline"];
+      const thead = document.querySelector("#tbl thead");
+      const tbody = document.querySelector("#tbl tbody");
 
-  tbody.innerHTML = ordered.map(r=>{
-    const cells = [
-      r.cliente,
-      r.proyecto,
-      r.tipo || "",
-      r.estatus || "",
-      r.owner || "",
-      r.deadline ? r.deadline.toLocaleDateString() : ""
-    ];
-    // Si es tarea, color o indentación leve
-    const isTask = r.tipo && r.tipo.toLowerCase() === "tarea";
-    return `<tr style="${isTask ? "background:#fafafa" : ""}">` +
-           cells.map(c=>`<td>${c??""}</td>`).join("") +
-           "</tr>";
-  }).join("");
+      // Encabezados ordenables
+      thead.innerHTML = "<tr>" + labels.map((l, i) => {
+        const active = SORT_KEYS[i] === sortState.key;
+        const arrow  = active ? (sortState.dir === 1 ? "▲" : "▼") : "";
+        return `<th class="sortable" data-col="${i}" data-sort="${arrow}">${l}</th>`;
+      }).join("") + "</tr>";
 
-  document.getElementById("count").textContent = `${VIEW.length} fila(s)`;
-}
+      // Copia y orden
+      let rows = [...VIEW];
+      if (sortState.key){
+        const idx = SORT_KEYS.indexOf(sortState.key);
+        rows.sort((a,b)=>{
+          let res = SORT_KEYS[idx] === "deadline" ? cmpDate(a.deadline, b.deadline)
+                                                  : cmpText(a[SORT_KEYS[idx]], b[SORT_KEYS[idx]]);
+          return res * sortState.dir;
+        });
+      } else {
+        rows.sort((a,b)=>{
+          const c = cmpText(a.cliente, b.cliente); if (c) return c;
+          const p = cmpText(a.proyecto, b.proyecto); if (p) return p;
+          return cmpText(a.tarea, b.tarea);
+        });
+      }
+
+      const hoy = today0().getTime();
+
+      tbody.innerHTML = rows.map(r=>{
+        // Regla de "tarea atrasada": tipo=tarea, no finalizado y deadline pasado
+        const isTask = (r.tipo||"").toLowerCase() === "tarea";
+        const overdue = isTask && !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy;
+        const rowStyle = overdue ? 'style="color:#d62728"' : '';
+
+        const cells = [
+          r.cliente || "",
+          r.proyecto || "",
+          r.tarea || "",
+          r.tipo || "",
+          r.estatus || "",
+          r.owner || "",
+          r.deadline ? r.deadline.toLocaleDateString() : ""
+        ];
+        return `<tr ${rowStyle}>` + cells.map(c=>`<td>${c??""}</td>`).join("") + "</tr>";
+      }).join("");
+
+      document.getElementById("count").textContent = `${rows.length} fila(s)`;
+
+      // Click para ordenar
+      thead.querySelectorAll("th.sortable").forEach(th=>{
+        th.addEventListener("click", () => {
+          const col = Number(th.getAttribute("data-col"));
+          const key = SORT_KEYS[col];
+          if (sortState.key === key){ sortState.dir = -sortState.dir; }
+          else { sortState.key = key; sortState.dir = 1; }
+          renderTable();
+        });
+      });
+    }
 
     /* ================== Carga Excel (+ hard cap y anclaje de cliente) ================== */
     async function loadExcel(){
@@ -278,9 +348,8 @@
       if (clientesParam && clientesParam.length) {
         // Hard cap
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
-        // Guardar anclaje de cliente(s) en esta pestaña
         sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
-        // Bloquear filtro Cliente en la UI
+        // Bloquear filtro Cliente
         queueMicrotask(() => {
           const fc = document.getElementById('f-cliente');
           if (fc) {
@@ -293,6 +362,7 @@
       }
 
       VIEW = [...RAW];
+      updateBanner();
       renderKPIs(); renderFilters(); renderCharts(); renderTable();
     }
 
@@ -348,7 +418,7 @@
       const clientesParam = parseClienteParam();
       const saved = sessionStorage.getItem(SESSION_ALLOWED_CLIENTS);
 
-      // Si no hay ?cliente= pero en esta pestaña ya se había fijado uno, reponerlo y salir
+      // Si no hay ?cliente= pero ya estaba fijado en esta pestaña, reponerlo
       if ((!clientesParam || !clientesParam.length) && saved) {
         const arr = JSON.parse(saved);
         const base = window.location.origin + window.location.pathname;
