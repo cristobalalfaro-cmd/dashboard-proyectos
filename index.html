@@ -54,12 +54,14 @@
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js")
+      navigator.serviceWorker
+        .register("./service-worker.js")
         .then(() => console.log("Service Worker registrado"))
-        .catch(console.error);
+        .catch((err) => console.error(err));
     });
   }
 </script>
+
 
 <body>
   <div class="wrap">
@@ -605,6 +607,5 @@ async function loadExcel(){
     ["f-cliente","f-proyecto","f-owner","f-estatus"].forEach(id=>{
       document.getElementById(id).addEventListener("change", applyFilters);
     });
-  </script>
-</body>
-</html>
+} // 👈 cierre de la función loadExcel()
+</script>
