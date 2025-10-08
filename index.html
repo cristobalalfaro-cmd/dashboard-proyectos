@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="es">
 <head>
+ <link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#0ea5e9">
+
+<!-- iOS (para icono en pantalla de inicio) -->
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+ 
   <meta charset="utf-8" />
   <title>Dashboard de Proyectos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -43,6 +51,16 @@
     th.sortable::after{content: attr(data-sort);position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:12px; opacity:.6;}
   </style>
 </head>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => console.log("Service Worker registrado"))
+        .catch(console.error);
+    });
+  }
+</script>
+
 <body>
   <div class="wrap">
     <h1 style="margin:0 0 8px 0">Dashboard de Proyectos</h1>
@@ -429,59 +447,95 @@
     }
 
     /* ===== Carga Excel ===== */
+   
     async function loadExcel(){
-      const excelUrl = await computeExcelUrl();
-      const res = await fetch(excelUrl, { cache: "no-store" });
-      if(!res.ok){ alert("No pude cargar el Excel"); return; }
-      const buf = await res.arrayBuffer();
-      const wb  = XLSX.read(buf, {type:"array"});
+      /* ================== Carga Excel mejorada ================== */
+async function loadExcel(){
+  const excelUrl = await computeExcelUrl();
+  const res = await fetch(excelUrl, { cache: "no-store" });
+  if(!res.ok){ alert("No pude cargar el Excel"); return; }
+  const buf = await res.arrayBuffer();
+  const wb  = XLSX.read(buf, {type:"array"});
 
-      const sheetName = wb.SheetNames.includes("Tareas") ? "Tareas" : wb.SheetNames[0];
-      const sheet = wb.Sheets[sheetName];
+  const sheetName = wb.SheetNames.includes("Tareas") ? "Tareas" : wb.SheetNames[0];
+  const sheet = wb.Sheets[sheetName];
+  const rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
-      // 1) Objetos por encabezados
-      let rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
+  // === Validación de encabezados ===
+  const firstRow = rowsObj[0] || {};
+  const required = ["Cliente","Proyecto","Tareas","Estatus","Deadline"];
+  const missing = required.filter(k => !Object.keys(firstRow).some(h => normalizeKey(h) === normalizeKey(k)));
+  if (missing.length) {
+    alert("⚠️ El archivo Excel no tiene las columnas necesarias: " + missing.join(", "));
+  }
 
-      // 1.1 Normalizar encabezados raros (espacios/UTF-8 BOM)
-      rowsObj = rowsObj.map(cleanRowKeys);
-
-      // 2) Si la hoja es "Tareas", forzar COLUMNA D como "Tareas"
-      if (sheet["!ref"]) {
-        const range = XLSX.utils.decode_range(sheet["!ref"]);
-        rowsObj.forEach((row, idx) => {
-          if (sheetName === "Tareas") {
-            const excelRowNumber = range.s.r + 1 + 1 + idx; // base 1 + header
-            const cellAddr = "D" + excelRowNumber; // Columna D
-            const cell = sheet[cellAddr];
-            const valD = cell ? cell.v : "";
-            if (!row["Tareas"] && valD !== undefined) row["Tareas"] = valD;
-          }
-          if (row["Tareas"] && !row["Tarea"]) row["Tareas"] = row["Tareas"];
-        });
+  // === Forzar columna D (si existe hoja Tareas) ===
+  if (sheet["!ref"]) {
+    const range = XLSX.utils.decode_range(sheet["!ref"]);
+    rowsObj.forEach((row, idx) => {
+      if (sheetName === "Tareas") {
+        const excelRowNumber = range.s.r + 1 + 1 + idx;
+        const cellAddr = "D" + excelRowNumber;
+        const cell = sheet[cellAddr];
+        const valD = cell ? cell.v : "";
+        if (!row["Tareas"] && valD !== undefined) row["Tareas"] = valD;
       }
+      if (row["Tareas"] && !row["Tarea"]) row["Tarea"] = row["Tareas"];
+    });
+  }
 
-      RAW = rowsObj.map(normalizeRow);
+  // === Normalización robusta de filas ===
+  RAW = rowsObj.map(r => {
+    const norm = normalizeRow(r);
 
-      // Filtro por cliente en URL
-      const clientesParam = parseClienteParam();
-      if (clientesParam && clientesParam.length) {
-        RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
-        sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
-        queueMicrotask(() => {
-          const fc = document.getElementById('f-cliente');
-          if (fc) {
-            const label = (uniqueSorted(RAW.map(x=>x.cliente)).join(', ')) || clienteParamRaw || "Cliente";
-            fc.innerHTML = `<option>${label}</option>`;
-            fc.value = label;
-            fc.disabled = true;
-          }
-        });
+    // 🔧 Si deadline viene como texto no estándar, intentar arreglarlo
+    if (!norm.deadline && typeof r.Deadline === "string") {
+      const s = r.Deadline.trim().replace(/[^\d\-\/]/g, '');
+      const parts = s.split(/[-\/]/);
+      if (parts.length >= 3) {
+        const [d, m, y] = parts.map(Number);
+        const year = y < 100 ? 2000 + y : y;
+        norm.deadline = new Date(year, m - 1, d);
+        norm.deadlineTS = norm.deadline.getTime();
       }
-
-      VIEW = [...RAW];
-      updateBanner();
-      renderKPIs(); renderFilters(); renderCharts(); renderTable(); renderGauge();
     }
+
+    // 🔧 Corrige estatus comunes mal escritos
+    const e = normalizeKey(norm.estatus);
+    if (e.startsWith("finaliz")) norm.estatus = "Finalizado";
+    else if (e.includes("curso") || e.includes("desarrollo")) norm.estatus = "Iniciado en Plazo";
+    else if (e.includes("pend") || e.includes("no iniciado")) norm.estatus = "No iniciado";
+    else if (e.includes("hold")) norm.estatus = "On Hold";
+    else if (e.includes("atras")) norm.estatus = "Atrasado";
+
+    return norm;
+  });
+
+  // === Filtro por cliente (si hay parámetro) ===
+  const clientesParam = parseClienteParam();
+  if (clientesParam && clientesParam.length) {
+    RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
+    sessionStorage.setItem(SESSION_ALLOWED_CLIENTS, JSON.stringify(clientesParam));
+    queueMicrotask(() => {
+      const fc = document.getElementById('f-cliente');
+      if (fc) {
+        const label = (uniqueSorted(RAW.map(x=>x.cliente)).join(', ')) || clienteParamRaw || "Cliente";
+        fc.innerHTML = `<option>${label}</option>`;
+        fc.value = label;
+        fc.disabled = true;
+      }
+    });
+  }
+
+  VIEW = [...RAW];
+  updateBanner();
+  renderKPIs();
+  renderFilters();
+  renderCharts();
+  renderTable();
+  renderGauge();
+}
+
 
     /* ===== Password (sólo vista general) ===== */
     async function checkPassword(inputPassword){
