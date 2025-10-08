@@ -636,3 +636,16 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx?v=" + Date.now();
+let EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx"; // valor base
+
+async function computeExcelUrl(){
+  try {
+    const r = await fetch("cache-bust.txt", { cache: "no-store" });
+    if (r.ok) {
+      const v = (await r.text()).trim();
+      return `${EXCEL_FILE}?v=${encodeURIComponent(v)}`;
+    }
+  } catch {}
+  return `${EXCEL_FILE}?v=${Date.now()}`; // fallback local
+}
