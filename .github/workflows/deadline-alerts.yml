@@ -1,0 +1,33 @@
+name: Enviar alertas de deadlines
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # todos los días 12:00 UTC (~09:00 en Chile UTC-3)
+  workflow_dispatch: {}     # permite gatillarlo manualmente
+
+permissions:
+  contents: read
+
+jobs:
+  alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run alerts
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}          # ej: 587
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}  # tu correo/app user
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}  # tu app password
+          ALERT_TO: ${{ secrets.ALERT_TO }}            # opcional (por defecto del PM)
+        run: npm run alertas
