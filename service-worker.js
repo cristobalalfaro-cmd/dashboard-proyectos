@@ -1,23 +1,20 @@
 // service-worker.js
-const CACHE_NAME = "dashboard-cache-v2"; // 👈 nueva versión
+const CACHE_NAME = "dashboard-cache-v3";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.js",
-  "./data.json",              // 👈 agregado al caché
+  // agrega aquí tus archivos estáticos si existen:
+  // "./styles.css",
+  // "./app.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
+  // IMPORTANTE: NO incluir "./data.json" en el precache
 ];
 
-// Instalar (precargar archivos)
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
 });
 
-// Activar (limpiar cachés antiguos)
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -26,18 +23,34 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch (servir desde caché o red)
+// data.json: network-first (si no hay red, usa lo último en caché)
+// resto de assets: cache-first
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return (
-        cached ||
-        fetch(event.request).then((res) => {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+  const url = new URL(event.request.url);
+
+  // Manejo especial para data.json
+  if (url.pathname.endsWith("/data.json")) {
+    event.respondWith(
+      fetch(event.request)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
           return res;
         })
-      );
-    })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Por defecto: cache-first
+  event.respondWith(
+    caches.match(event.request).then((cached) =>
+      cached ||
+      fetch(event.request).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((c) => c.put(event.request, copy));
+        return res;
+      })
+    )
   );
 });
