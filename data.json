@@ -1,668 +1,650 @@
 [
   {
-    "Tipo":"Propuesta",
-    "Cliente":"Sprint\/Meli",
-    "Proyecto":"Liderazgo 4x4",
-    "Tareas":"Propuesta enviada ($4.300.000)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Sprint\/Starbuks",
-    "Proyecto":"Modelo de Atención",
-    "Tareas":"Propuesta enviada ($6.200.000)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Sprint\/Construmart",
-    "Proyecto":"Construmart - Estudio Cultura",
-    "Tareas":"Propuesta ($22.653.200)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Sprint\/BioNet",
-    "Proyecto":"Pilares de atención",
-    "Tareas":"Propuesta enviada",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Check Persons\/Komatsu",
-    "Proyecto":"Legacy 2",
-    "Tareas":"Propuesta enviada ($5.700.000)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Xentra\/Adium",
-    "Proyecto":"Sistemática Comercial laboratorio",
-    "Tareas":"Propuesta enviada ($5.700.000)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Xentra\/Adium",
-    "Proyecto":"Sistemática Comercial oncología",
-    "Tareas":"Propuesta enviada ($5.700.000)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Xentra\/Entel",
-    "Proyecto":"Manual de Instructores",
-    "Tareas":"Propuesta enviada",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Meikitisy\/Honda",
-    "Proyecto":"Mistery Shoper",
-    "Tareas":"Propuesta enviada ($5.000.000)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Meikitisy\/AcidLabs",
-    "Proyecto":"Venta consultiva",
-    "Tareas":"Propuesta enviada ($2.527.040)",
-    "Deadline":1757894400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"Dashboard",
-    "Tareas":"Actualización",
-    "Deadline":1758585600000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"Bowler",
-    "Tareas":"Actualización",
-    "Deadline":1758585600000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Desarrollo contenidos inducción hotelería",
-    "Deadline":1759104000000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"BioNet",
-    "Proyecto":"Modelo de atención",
-    "Tareas":"Elaboración de propuesta",
-    "Deadline":1759276800000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Cementos Melón",
-    "Proyecto":"Sistemática Comercial",
-    "Tareas":"Elaboración de propuesta",
-    "Deadline":1759363200000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Entrega PPT Kick off Data Driven",
-    "Deadline":1759449600000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Cromtek",
-    "Proyecto":"Sistemática Comercial",
-    "Tareas":"Reunión de validación estrategia bajada a equipos",
-    "Deadline":1759449600000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Cromtek",
-    "Proyecto":"Sistemática Comercial",
-    "Tareas":"Validación manual",
-    "Deadline":1759449600000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"Dashboard",
-    "Tareas":"Compra licencia Power BI",
-    "Deadline":1759449600000,
-    "Estatus":"On hold",
-    "Owner":"Nicolás Araya"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Validar el concept art",
-    "Deadline":1759449600000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollo caso 1",
-    "Deadline":1759449600000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Jorge Cádiz"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollar evaluación módulo 1",
-    "Deadline":1759449600000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"BioNet",
-    "Proyecto":"Modelo de atención",
-    "Tareas":"Propuesta financiera",
-    "Deadline":1759708800000,
-    "Estatus":"Iniciado en plazo",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Desarrollo contenidos Cultura de Servicio",
-    "Deadline":1759708800000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Desarrollo contenidos Habilitación Colaboradores",
-    "Deadline":1759708800000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Cromtek",
-    "Proyecto":"Sistemática Comercial",
-    "Tareas":"Diseño de formación",
-    "Deadline":1760054400000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Komatsu-Cummins",
-    "Proyecto":"Manual Instructores",
-    "Tareas":"Validación de contenidos",
-    "Deadline":1760054400000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollo caso 2",
-    "Deadline":1760054400000,
-    "Estatus":"No iniciado",
-    "Owner":"Jorge Cádiz"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollar evaluación módulo 2",
-    "Deadline":1760054400000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Revisión Data Lake (RRHH y logística)",
-    "Deadline":1760054400000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Diseño PPT Kick off Champions",
-    "Deadline":1760054400000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Komatsu-Cummins",
-    "Proyecto":"Licitación modelo gestión instructores",
-    "Tareas":"Elaboración de propuesta",
-    "Deadline":1759795200000,
-    "Estatus":"No iniciado",
-    "Owner":"Loreto Naranjo"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Kick Off Champions",
-    "Deadline":1760313600000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Desarrollo contenidos Rol de Aux. Aseo \/ Mucama",
-    "Deadline":1760313600000,
-    "Estatus":"Iniciado en plazo",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Revisión de contenidos",
-    "Deadline":1759708800000,
-    "Estatus":"Finalizado",
-    "Owner":"Encargados de Hotel"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Cromtek",
-    "Proyecto":"Sistemática Comercial",
-    "Tareas":"Ejecución de formación",
-    "Deadline":1760659200000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Komatsu-Cummins",
-    "Proyecto":"Manual Instructores",
-    "Tareas":"Arreglos gráficos",
-    "Deadline":1760659200000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Komatsu-Cummins",
-    "Proyecto":"Manual Instructores",
-    "Tareas":"Entrega final",
-    "Deadline":1760659200000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollo caso 3",
-    "Deadline":1760659200000,
-    "Estatus":"No iniciado",
-    "Owner":"Jorge Cádiz"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollar evaluación módulo 3",
-    "Deadline":1760659200000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Kick off cultura Data-Driven",
-    "Deadline":1760918400000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Construcción versión final (mas resumida, no tan extensa, más práctica)",
-    "Deadline":1760313600000,
-    "Estatus":"Iniciado en plazo",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Validación contenidos + agregar info propia de cada hotel",
-    "Deadline":1760918400000,
-    "Estatus":"No iniciado",
-    "Owner":"Encargados de Hotel"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Cromtek",
-    "Proyecto":"Sistemática Comercial",
-    "Tareas":"Entrega de informe",
-    "Deadline":1761264000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollar mapa",
-    "Deadline":1761264000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Diseño gráfico presentaciones (todos los módulos)",
-    "Deadline":1761523200000,
-    "Estatus":"No iniciado",
-    "Owner":"Jorge García (Sprint)"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Diseño Manual del Participante (Inducción completa)",
-    "Deadline":1762128000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Diseño del modelo de organización por área: manual del rol champions",
-    "Deadline":1761868800000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Diseño formación sesiones embajadores RRHH y Logística",
-    "Deadline":1761868800000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Diseño formación sesiones áreas de RRHH y Logística",
-    "Deadline":1761868800000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Formación de Embajadores RRHH y Logística: Modelo de Datos",
-    "Deadline":1762128000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Formación de Embajadores RRHH y Logística: Entrenamiento y certificación de sus equipos",
-    "Deadline":1762128000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Diseño Manual del Participante (Piloto Auxiliares de Aseo)",
-    "Deadline":1762128000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Diseño Manual de Coaching (Piloto Auxiliares de Aseo)",
-    "Deadline":1762128000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Reunión de traspaso (habilitación) presentaciones a Encargados de Personas de cada Hotel",
-    "Deadline":1762732800000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollo objeto E-learning 1 módulo",
-    "Deadline":1762473600000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Capacitación áreas RRHH y Logística: Sensibilización + introducción al modelo, propósito, expectativas.",
-    "Deadline":1762732800000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Entrenamiento áreas de RRHH y Logística: Uso de Datos (desarrollo de skills técnicas iniciales)",
-    "Deadline":1762732800000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Reunión de traspaso (habilitación) manual Aux. Aseo a Encargados de Personas y Jefes de ese rol",
-    "Deadline":1763337600000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Kick Off Nuevo proceso de Inducción + Piloto Coaching rol de Aux Aseo.",
-    "Deadline":1763337600000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollo objeto E-learning 2 módulo",
-    "Deadline":1763078400000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Desarrollo objeto E-learning 3 módulo",
-    "Deadline":1763683200000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Nobel Biocare",
-    "Proyecto":"E-Learning CST",
-    "Tareas":"Lanzamiento",
-    "Deadline":1764288000000,
-    "Estatus":"No iniciado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Imiflex",
-    "Proyecto":"Comercial",
-    "Tareas":"Seguimiento reunión de presentación ($2.700.000 \/ $6.300.000)",
-    "Deadline":1760313600000,
-    "Estatus":"Iniciado atrasado",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Estudio \/ alineamiento modelo de datos área Comercial",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Diseño formación sesiones embajadores área Comercial",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Diseño formación sesiones equipos área Comercial",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Formación de Embajadores área Comercial: Modelo de Datos",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Formación de Embajadores área Comercial: Entrenamiento y certificación de sus equipos",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Capacitación área Comercial: Sensibilización + introducción al modelo, propósito, expectativas.",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Ópticas Schilling",
-    "Proyecto":"Data Lake",
-    "Tareas":"Entrenamiento área Comercial: Uso de Datos (desarrollo de skills técnicas iniciales)",
-    "Deadline":1761955200000,
-    "Estatus":"On hold",
-    "Owner":"Cristobal.Alfaro"
-  },
-  {
-    "Tipo":"Proyecto",
-    "Cliente":"Promet",
-    "Proyecto":"Onboarding",
-    "Tareas":"Validación contenidos Rol de Aux. Aseo \/ Mucama (con jefes del área)",
-    "Deadline":1761523200000,
-    "Estatus":"No iniciado",
-    "Owner":"Encargados de Hotel"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Taglermaq",
-    "Proyecto":"Explorando posibilidades",
-    "Tareas":"Envío de presentación, productos y servicios Xentra",
-    "Deadline":1760054400000,
-    "Estatus":"Pendiente",
-    "Owner":"Jorge Cádiz"
-  },
-  {
-    "Tipo":"Propuesta",
-    "Cliente":"Taglermaq",
-    "Proyecto":"Explorando posibilidades",
-    "Tareas":"Desarrollo PPT explicación de productos",
-    "Deadline":1760054400000,
-    "Estatus":"Finalizado",
-    "Owner":"Cristobal.Alfaro"
+    "Tipo": "Propuesta",
+    "Cliente": "Sprint/Meli",
+    "Proyecto": "Liderazgo 4x4",
+    "Tareas": "Propuesta enviada ($4.300.000)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Sprint/Starbuks",
+    "Proyecto": "Modelo de Atención",
+    "Tareas": "Propuesta enviada ($6.200.000)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Sprint/Construmart",
+    "Proyecto": "Construmart - Estudio Cultura",
+    "Tareas": "Propuesta ($22.653.200)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Sprint/BioNet",
+    "Proyecto": "Pilares de atención",
+    "Tareas": "Propuesta enviada",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Check Persons/Komatsu",
+    "Proyecto": "Legacy 2",
+    "Tareas": "Propuesta enviada ($5.700.000)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Xentra/Adium",
+    "Proyecto": "Sistemática Comercial laboratorio",
+    "Tareas": "Propuesta enviada ($5.700.000)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Xentra/Adium",
+    "Proyecto": "Sistemática Comercial oncología",
+    "Tareas": "Propuesta enviada ($5.700.000)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Xentra/Entel",
+    "Proyecto": "Manual de Instructores",
+    "Tareas": "Propuesta enviada",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Meikitisy/Honda",
+    "Proyecto": "Mistery Shoper",
+    "Tareas": "Propuesta enviada ($5.000.000)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Meikitisy/AcidLabs",
+    "Proyecto": "Venta consultiva",
+    "Tareas": "Propuesta enviada ($2.527.040)",
+    "Deadline": 1757894400000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "Dashboard",
+    "Tareas": "Actualización",
+    "Deadline": 1758585600000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "Bowler",
+    "Tareas": "Actualización",
+    "Deadline": 1758585600000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Desarrollo contenidos inducción hotelería",
+    "Deadline": 1759104000000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "BioNet",
+    "Proyecto": "Modelo de atención",
+    "Tareas": "Elaboración de propuesta",
+    "Deadline": 1759276800000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Cementos Melón",
+    "Proyecto": "Sistemática Comercial",
+    "Tareas": "Elaboración de propuesta",
+    "Deadline": 1759363200000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Entrega PPT Kick off Data Driven",
+    "Deadline": 1759449600000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Cromtek",
+    "Proyecto": "Sistemática Comercial",
+    "Tareas": "Reunión de validación estrategia bajada a equipos",
+    "Deadline": 1759449600000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Cromtek",
+    "Proyecto": "Sistemática Comercial",
+    "Tareas": "Validación manual",
+    "Deadline": 1759449600000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "Dashboard",
+    "Tareas": "Compra licencia Power BI",
+    "Deadline": 1759449600000,
+    "Estatus": "On hold",
+    "Owner": "Nicolás.Araya"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Validar el concept art",
+    "Deadline": 1759449600000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollo caso 1",
+    "Deadline": 1759449600000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Jorge.Cadiz"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollar evaluación módulo 1",
+    "Deadline": 1759449600000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "BioNet",
+    "Proyecto": "Modelo de atención",
+    "Tareas": "Propuesta financiera",
+    "Deadline": 1759708800000,
+    "Estatus": "Iniciado en plazo",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Desarrollo contenidos Cultura de Servicio",
+    "Deadline": 1759708800000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Desarrollo contenidos Habilitación Colaboradores",
+    "Deadline": 1759708800000,
+    "Estatus": "Finalizado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Cromtek",
+    "Proyecto": "Sistemática Comercial",
+    "Tareas": "Diseño de formación",
+    "Deadline": 1760054400000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Komatsu-Cummins",
+    "Proyecto": "Manual Instructores",
+    "Tareas": "Validación de contenidos",
+    "Deadline": 1760054400000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollo caso 2",
+    "Deadline": 1760054400000,
+    "Estatus": "No iniciado",
+    "Owner": "Jorge.Cadiz"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollar evaluación módulo 2",
+    "Deadline": 1760054400000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Revisión Data Lake (RRHH y logística)",
+    "Deadline": 1760054400000,
+    "Estatus": "Iniciado en plazo",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño PPTT Kick off Champions",
+    "Deadline": 1760054400000,
+    "Estatus": "Iniciado en plazo",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Komatsu-Cummins",
+    "Proyecto": "Licitación modelo gestión instructores",
+    "Tareas": "Elaboración de propuesta",
+    "Deadline": 1759795200000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto.Naranjo"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Kick Off Champions",
+    "Deadline": 1760313600000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Desarrollo contenidos Rol de Aux. Aseo / Mucama",
+    "Deadline": 1760313600000,
+    "Estatus": "Iniciado en plazo",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Revisión de contenidos",
+    "Deadline": 1759708800000,
+    "Estatus": "Finalizado",
+    "Owner": "Encargados de Hotel"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Cromtek",
+    "Proyecto": "Sistemática Comercial",
+    "Tareas": "Ejecución de formación",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Komatsu-Cummins",
+    "Proyecto": "Manual Instructores",
+    "Tareas": "Arreglos gráficos",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Komatsu-Cummins",
+    "Proyecto": "Manual Instructores",
+    "Tareas": "Entrega final",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollo caso 3",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Jorge.Cadiz"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollar evaluación módulo 3",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Kick off cultura Data-Driven",
+    "Deadline": 1760918400000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Construcción versión final (mas resumida, no tan extensa, más práctica)",
+    "Deadline": 1760313600000,
+    "Estatus": "Iniciado en plazo",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Validación contenidos + agregar info propia de cada hotel",
+    "Deadline": 1760918400000,
+    "Estatus": "No iniciado",
+    "Owner": "Encargados de Hotel"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Cromtek",
+    "Proyecto": "Sistemática Comercial",
+    "Tareas": "Entrega de informe",
+    "Deadline": 1761264000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollar mapa",
+    "Deadline": 1761264000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Diseño gráfico presentaciones (todos los módulos)",
+    "Deadline": 1761523200000,
+    "Estatus": "No iniciado",
+    "Owner": "Jorge García (Sprint)"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Diseño Manual del Participante (Inducción completa)",
+    "Deadline": 1762128000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño del modelo de organización por área: manual del rol champions",
+    "Deadline": 1761868800000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño formación sesiones embajadores RRHH y Logística",
+    "Deadline": 1761868800000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño formación sesiones áreas de RRHH y Logística",
+    "Deadline": 1761868800000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Formación de Embajadores RRHH y Logística: Modelo de Datos",
+    "Deadline": 1762128000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Formación de Embajadores RRHH y Logística: Entrenamiento y certificación de sus equipos",
+    "Deadline": 1762128000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Diseño Manual del Participante (Piloto Auxiliares de Aseo)",
+    "Deadline": 1762128000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Diseño Manual de Coaching (Piloto Auxiliares de Aseo)",
+    "Deadline": 1762128000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Reunión de traspaso (habilitación) presentaciones a Encargados de Personas de cada Hotel",
+    "Deadline": 1762732800000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollo objeto E-learning 1 módulo",
+    "Deadline": 1762473600000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Capacitación áreas RRHH y Logística: Sensibilización + introducción al modelo, propósito, expectativas.",
+    "Deadline": 1762732800000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Entrenamiento áreas de RRHH y Logística: Uso de Datos (desarrollo de skills técnicas iniciales)",
+    "Deadline": 1762732800000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Reunión de traspaso (habilitación) manual Aux. Aseo a Encargados de Personas y Jefes de ese rol",
+    "Deadline": 1763337600000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Kick Off Nuevo proceso de Inducción + Piloto Coaching rol de Aux Aseo.",
+    "Deadline": 1763337600000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollo objeto E-learning 2 módulo",
+    "Deadline": 1763078400000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Desarrollo objeto E-learning 3 módulo",
+    "Deadline": 1763683200000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Nobel Biocare",
+    "Proyecto": "E-Learning CST",
+    "Tareas": "Lanzamiento",
+    "Deadline": 1764288000000,
+    "Estatus": "No iniciado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Imiflex",
+    "Proyecto": "Comercial",
+    "Tareas": "Seguimiento reunión de presentación ($2.700.000 / $6.300.000)",
+    "Deadline": 1760313600000,
+    "Estatus": "Iniciado atrasado",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Estudio / alineamiento modelo de datos área Comercial",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño formación sesiones embajadores área Comercial",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño formación sesiones equipos área Comercial",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Formación de Embajadores área Comercial: Modelo de Datos",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Formación de Embajadores área Comercial: Entrenamiento y certificación de sus equipos",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Capacitación área Comercial: Sensibilización + introducción al modelo, propósito, expectativas.",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Entrenamiento área Comercial: Uso de Datos (desarrollo de skills técnicas iniciales)",
+    "Deadline": 1761955200000,
+    "Estatus": "On hold",
+    "Owner": "Cristobal.Alfaro"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Promet",
+    "Proyecto": "Onboarding",
+    "Tareas": "Validación contenidos Rol de Aux. Aseo / Mucama (con jefes del área)",
+    "Deadline": 1761523200000,
+    "Estatus": "No iniciado",
+    "Owner": "Encargados de Hotel"
   }
 ]
