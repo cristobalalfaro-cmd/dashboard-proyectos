@@ -16,7 +16,6 @@
     .filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 24px}
     select,input{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
 
-    /* === 3 gráficos en la misma fila (responsive) === */
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
     @media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:700px){.grid{grid-template-columns:1fr}}
@@ -27,7 +26,6 @@
     th{background:#fafafa;text-align:left}
     .muted{opacity:.65}
 
-    /* Overlay acceso (solo vista general) */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:9999}
     .dialog{width:min(92vw,420px);background:#fff;border-radius:16px;padding:22px;border:1px solid #e5e7eb;box-shadow:0 20px 50px rgba(0,0,0,.15)}
     .dialog h2{margin:0 0 8px 0;font-size:18px}
@@ -38,11 +36,9 @@
     .shake{animation:shake .25s}
     @keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}100%{transform:translateX(0)}}
 
-    /* Banner de cliente */
     .banner{display:none;margin:0 0 12px 0;padding:10px 14px;border-radius:12px;border:1px solid #dbe4ff;background:#eef3ff;color:#0b3d91;font-weight:600}
     .banner small{font-weight:500;opacity:.8;margin-left:8px}
 
-    /* Encabezados ordenables */
     th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:20px}
     th.sortable::after{content: attr(data-sort);position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:12px; opacity:.6;}
   </style>
@@ -52,7 +48,6 @@
     <h1 style="margin:0 0 8px 0">Dashboard de Proyectos</h1>
     <div id="client-banner" class="banner"></div>
 
-    <!-- KPIs -->
     <div class="kpis">
       <div class="card"><h3>N° Clientes</h3><div id="kpi-clientes" class="v">—</div></div>
       <div class="card"><h3>N° Proyectos activos</h3><div id="kpi-proyectos" class="v">—</div></div>
@@ -61,7 +56,6 @@
       <div class="card"><h3>N° Tareas On Hold</h3><div id="kpi-onhold" class="v">—</div></div>
     </div>
 
-    <!-- Filtros -->
     <div class="filters">
       <select id="f-cliente"><option value="">Cliente (todos)</option></select>
       <select id="f-proyecto"><option value="">Proyecto (todos)</option></select>
@@ -69,14 +63,12 @@
       <select id="f-estatus"><option value="">Estatus (todos)</option></select>
     </div>
 
-    <!-- Gráficos -->
     <div class="grid">
       <div class="card"><h3>Distribución por Estatus</h3><canvas id="chEstatus"></canvas></div>
       <div class="card"><h3>Distribución por Owner</h3><canvas id="chOwner"></canvas></div>
       <div class="card"><h3>% Cumplimiento (Tareas)</h3><canvas id="chGauge"></canvas></div>
     </div>
 
-    <!-- Tabla -->
     <div class="card">
       <h3>Detalle</h3>
       <table id="tbl"><thead></thead><tbody></tbody></table>
@@ -84,22 +76,20 @@
     </div>
   </div>
 
-  <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script>
-    /* ================== CONFIG ================== */
-    let EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx"; // base, luego agregamos ?v=...
+    /* ===== CONFIG ===== */
+    let EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
     const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746"; // "Tomi.2016"
     const SESSION_FLAG = "dashboard_auth_ok";
     const SESSION_ALLOWED_CLIENTS = "allowed_clients";
 
-    /* ================== MAPEOS ================== */
+    /* ===== MAPEOS ===== */
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
-      // ahora usamos "Tareas" (plural) como alias principal
       tarea:     ["Tareas","Tarea","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
       tipo:      ["Tipo","Category"],
       estatus:   ["Estatus","Estado","Status"],
@@ -107,7 +97,7 @@
       deadline:  ["Deadline","Fecha Limite","Fecha Límite","Vencimiento","Due Date"]
     };
 
-    /* ================== URL / normalización ================== */
+    /* ===== URL ===== */
     const urlParams = new URLSearchParams(window.location.search);
     const clienteParamRaw = urlParams.get('cliente');
     const normalizeKey = (s) => (s ?? "").toString().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
@@ -116,7 +106,7 @@
       return clienteParamRaw.split(',').map(s=>s.trim()).filter(Boolean).map(normalizeKey);
     }
 
-    /* ===== Cache-buster para el Excel (usa cache-bust.txt del workflow) ===== */
+    /* ===== Cache-buster ===== */
     async function computeExcelUrl(){
       try{
         const r = await fetch("cache-bust.txt", { cache: "no-store" });
@@ -128,61 +118,64 @@
       return `${EXCEL_FILE}?v=${Date.now()}`;
     }
 
-    /* ================== Utils ================== */
+    /* ===== Utils ===== */
     const normStr = (s) => (s ?? "").toString().trim();
 
-    // Convierte a Date asumiendo DD-MM-AAAA o DD-MM-AA cuando llegue como texto
+    // Parser de fecha: serial Excel o "DD-MM-AAAA/AA" (también admite "/" o ".")
     function toDate(v){
       if (v === undefined || v === null || v === "") return null;
-
-      // Excel serial
       if (typeof v === "number"){
         const start = new Date(Date.UTC(1899,11,30));
         const d = new Date(start.getTime() + v*86400000);
-        d.setHours(0,0,0,0);
-        return d;
+        d.setHours(0,0,0,0); return d;
       }
-
-      // String "DD-MM-AAAA" o "DD-MM-AA"
       if (typeof v === "string"){
-        const s = v.trim().replace(/\./g,'-').replace(/\//g,'-');
+        const s = v.trim().replace(/[./]/g,'-');
         const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{2}|\d{4})$/);
         if (m){
-          let d  = parseInt(m[1],10);
-          let mo = parseInt(m[2],10);
-          let y  = parseInt(m[3],10);
+          let d  = +m[1], mo = +m[2], y = +m[3];
           if (y < 100) y += 2000;
           const dt = new Date(y, mo-1, d);
           dt.setHours(0,0,0,0);
           return isNaN(dt) ? null : dt;
         }
-        // Fallback al parser nativo
         const dt2 = new Date(s);
         if (!isNaN(dt2)){ dt2.setHours(0,0,0,0); return dt2; }
       }
-
-      // Date ya válido
-      if (v instanceof Date && !isNaN(v)){ const d = new Date(v.getTime()); d.setHours(0,0,0,0); return d; }
-
+      if (v instanceof Date && !isNaN(v)){ const d=new Date(v.getTime()); d.setHours(0,0,0,0); return d; }
       return null;
     }
 
     const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
     const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
     const isFinalizado = (txt) => { const t = normalizeKey(txt); return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada"; };
-    const isOnHold = (txt) => { const t=normalizeKey(txt); return t==="on hold"||t==="onhold"; };
+    const isOnHold    = (txt) => { const t = normalizeKey(txt); return t==="on hold"||t==="onhold"; };
 
-    function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
+    // pick con aliases
+    function pick(obj, aliases){
+      for (const a of aliases){ if (a in obj) return obj[a]; }
+      return undefined;
+    }
+
+    // Limpia encabezados raros: quita BOM y espacios
+    function cleanRowKeys(row){
+      const out = {};
+      for (const k in row){
+        const nk = String(k).replace(/\uFEFF/g,'').trim();
+        out[nk] = row[k];
+      }
+      return out;
+    }
 
     function normalizeRow(r){
-      // asegurar que si viene "Tareas" lo usemos como nombre de tarea
+      // usar "Tareas" si viene y volcar a "Tarea" para los alias
       if (r["Tareas"] && !r["Tarea"]) r["Tarea"] = r["Tareas"];
 
       const d = toDate(pick(r, FIELD_MAP.deadline));
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tarea:     normStr(pick(r, FIELD_MAP.tarea)), // mapeado desde "Tareas"
+        tarea:     normStr(pick(r, FIELD_MAP.tarea)),
         tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
@@ -191,12 +184,13 @@
         _raw: r
       };
     }
+
     function uniqueSorted(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es')); }
 
-    /* ================== Estado ================== */
+    /* ===== Estado ===== */
     let RAW=[], VIEW=[], chEstatus, chOwner, chGauge;
 
-    /* ================== Banner ================== */
+    /* ===== Banner ===== */
     function updateBanner() {
       const banner = document.getElementById('client-banner');
       const params = parseClienteParam();
@@ -210,11 +204,10 @@
       }
     }
 
-    /* ================== KPIs ================== */
+    /* ===== KPIs ===== */
     function renderKPIs(){
       const clientes = uniqueSorted(VIEW.map(r=>r.cliente)).length;
 
-      // Proyectos activos: nombres distintos con tipo = "proyecto"
       const proyectosSet = new Set(
         VIEW.filter(r => r.tipo === "proyecto").map(r => r.proyecto).filter(Boolean)
       );
@@ -225,7 +218,6 @@
       const hoy = today0().getTime();
       const vencidas = VIEW.filter(r => !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy).length;
 
-      // On Hold: estatus "On Hold" O falta Deadline/Estatus/Owner
       const onHold = VIEW.filter(r => isOnHold(r.estatus) || !(r.deadline) || !(r.estatus) || !(r.owner)).length;
 
       document.getElementById("kpi-clientes").textContent   = fmt(clientes);
@@ -235,7 +227,7 @@
       document.getElementById("kpi-onhold").textContent     = fmt(onHold);
     }
 
-    /* ================== Filtros ================== */
+    /* ===== Filtros ===== */
     function renderFilters(){
       const setOpts = (id, values) => {
         const el = document.getElementById(id);
@@ -264,7 +256,7 @@
       renderKPIs(); renderFilters(); renderCharts(); renderTable(); renderGauge();
     }
 
-    /* ================== Gráficos ================== */
+    /* ===== Gráficos ===== */
     function renderCharts(){
       const COLORS = {
         "Finalizado": "#1f77b4",
@@ -317,7 +309,7 @@
       });
     }
 
-    /* ===== Gauge helpers ===== */
+    /* ===== Gauge ===== */
     function isTaskRow(r){
       const t = (r.tipo || "").toLowerCase();
       return t === "tarea" || (!!r.tarea && r.tarea.trim().length > 0);
@@ -361,34 +353,24 @@
         plugins: [GaugeTextPlugin],
         data: {
           labels: ['Completado', 'Pendiente'],
-          datasets: [{
-            data: [done, rest],
-            backgroundColor: ['#2ca02c', '#e5e7eb'],
-            borderWidth: 0,
-            hoverOffset: 2
-          }]
+          datasets: [{ data: [done, rest], backgroundColor: ['#2ca02c', '#e5e7eb'], borderWidth: 0, hoverOffset: 2 }]
         },
         options: {
           responsive: true,
           cutout: '70%',
-          // rotation: -90, circumference: 180, // semi-gauge si lo prefieres
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: (i) => `${i.label}: ${i.raw} (${pct}%)` } }
-          }
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: (i) => `${i.label}: ${i.raw} (${pct}%)` } } }
         }
       });
       chGauge._gaugePct = pct;
       chGauge.update();
     }
 
-    /* ================== Ordenamiento para Detalle ================== */
+    /* ===== Tabla ===== */
     let sortState = { key: null, dir: 1 };
     const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
     function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
     function cmpDate(a,b){ return (a?.deadlineTS || 0) - (b?.deadlineTS || 0); }
 
-    /* ================== Tabla (columna Tareas + filas rojas atrasadas) ================== */
     function renderTable(){
       const labels = ["Cliente","Proyecto","Tareas","Tipo","Estatus","Owner","Deadline"];
       const thead = document.querySelector("#tbl thead");
@@ -446,7 +428,7 @@
       });
     }
 
-    /* ================== Carga Excel (+ usa cache-buster y fuerza col D "Tareas") ================== */
+    /* ===== Carga Excel ===== */
     async function loadExcel(){
       const excelUrl = await computeExcelUrl();
       const res = await fetch(excelUrl, { cache: "no-store" });
@@ -457,28 +439,30 @@
       const sheetName = wb.SheetNames.includes("Tareas") ? "Tareas" : wb.SheetNames[0];
       const sheet = wb.Sheets[sheetName];
 
-      // 1) A objetos por encabezados
-      const rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
+      // 1) Objetos por encabezados
+      let rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
-      // 2) Si la hoja es "Tareas", forzar columna D como "Tareas" (y "Tarea")
+      // 1.1 Normalizar encabezados raros (espacios/UTF-8 BOM)
+      rowsObj = rowsObj.map(cleanRowKeys);
+
+      // 2) Si la hoja es "Tareas", forzar COLUMNA D como "Tareas"
       if (sheet["!ref"]) {
         const range = XLSX.utils.decode_range(sheet["!ref"]);
         rowsObj.forEach((row, idx) => {
           if (sheetName === "Tareas") {
-            const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 base1, +1 encabezado
+            const excelRowNumber = range.s.r + 1 + 1 + idx; // base 1 + header
             const cellAddr = "D" + excelRowNumber; // Columna D
             const cell = sheet[cellAddr];
             const valD = cell ? cell.v : "";
             if (!row["Tareas"] && valD !== undefined) row["Tareas"] = valD;
           }
-          // Copia de seguridad a "Tarea"
           if (row["Tareas"] && !row["Tarea"]) row["Tarea"] = row["Tareas"];
         });
       }
 
       RAW = rowsObj.map(normalizeRow);
 
-      // Anclaje por cliente si viene por URL
+      // Filtro por cliente en URL
       const clientesParam = parseClienteParam();
       if (clientesParam && clientesParam.length) {
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
@@ -499,7 +483,7 @@
       renderKPIs(); renderFilters(); renderCharts(); renderTable(); renderGauge();
     }
 
-    /* ================== Password (solo vista general) ================== */
+    /* ===== Password (sólo vista general) ===== */
     async function checkPassword(inputPassword){
       const enc = new TextEncoder().encode(inputPassword);
       const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
@@ -543,7 +527,7 @@
       input.focus();
     }
 
-    /* ================== Init con anclaje de cliente ================== */
+    /* ===== Init ===== */
     (function init(){
       const clientesParam = parseClienteParam();
       const saved = sessionStorage.getItem(SESSION_ALLOWED_CLIENTS);
@@ -564,7 +548,6 @@
       }
     })();
 
-    // Eventos filtros
     ["f-cliente","f-proyecto","f-owner","f-estatus"].forEach(id=>{
       document.getElementById(id).addEventListener("change", applyFilters);
     });
