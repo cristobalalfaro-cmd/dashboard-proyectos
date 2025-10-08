@@ -20,8 +20,6 @@
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
     @media (max-width:1024px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:700px){.grid{grid-template-columns:1fr}}
-
-    /* Para achicar los gráficos y quepan 3 */
     .grid .card canvas{height:180px !important; max-height:180px}
 
     table{width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden}
@@ -46,11 +44,7 @@
 
     /* Encabezados ordenables */
     th.sortable{cursor:pointer;user-select:none;position:relative;padding-right:20px}
-    th.sortable::after{
-      content: attr(data-sort);
-      position:absolute; right:6px; top:50%; transform:translateY(-50%);
-      font-size:12px; opacity:.6;
-    }
+    th.sortable::after{content: attr(data-sort);position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:12px; opacity:.6;}
   </style>
 </head>
 <body>
@@ -96,9 +90,8 @@
 
   <script>
     /* ================== CONFIG ================== */
-    const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx";
-    // Clave cifrada (SHA-256) de "Tomi.2016"
-    const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746";
+    let EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx"; // base, luego agregamos ?v=...
+    const GENERAL_VIEW_HASH = "488c013cb6bf0d8e7dae92e89d72a058ed3181a7c8bed1bceb456b2176bb1746"; // "Tomi.2016"
     const SESSION_FLAG = "dashboard_auth_ok";
     const SESSION_ALLOWED_CLIENTS = "allowed_clients";
 
@@ -106,8 +99,8 @@
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
-      // <-- agrega "Tareas" como alias
-      tarea:     ["Tarea","Tareas","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
+      // ahora usamos "Tareas" (plural) como alias principal
+      tarea:     ["Tareas","Tarea","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
       tipo:      ["Tipo","Category"],
       estatus:   ["Estatus","Estado","Status"],
       owner:     ["Owner","Responsable","Asignado","Ejecutor"],
@@ -123,32 +116,78 @@
       return clienteParamRaw.split(',').map(s=>s.trim()).filter(Boolean).map(normalizeKey);
     }
 
+    /* ===== Cache-buster para el Excel (usa cache-bust.txt del workflow) ===== */
+    async function computeExcelUrl(){
+      try{
+        const r = await fetch("cache-bust.txt", { cache: "no-store" });
+        if (r.ok) {
+          const v = (await r.text()).trim();
+          return `${EXCEL_FILE}?v=${encodeURIComponent(v)}`;
+        }
+      }catch(e){}
+      return `${EXCEL_FILE}?v=${Date.now()}`;
+    }
+
     /* ================== Utils ================== */
     const normStr = (s) => (s ?? "").toString().trim();
-    const toDate  = (v) => {
-      if (!v && v!==0) return null;
-      try {
-        if (typeof v === "number") { const start = new Date(Date.UTC(1899,11,30)); return new Date(start.getTime()+v*86400000); }
-        const d = new Date(v); return isNaN(d)?null:d;
-      } catch { return null; }
-    };
+
+    // Convierte a Date asumiendo DD-MM-AAAA o DD-MM-AA cuando llegue como texto
+    function toDate(v){
+      if (v === undefined || v === null || v === "") return null;
+
+      // Excel serial
+      if (typeof v === "number"){
+        const start = new Date(Date.UTC(1899,11,30));
+        const d = new Date(start.getTime() + v*86400000);
+        d.setHours(0,0,0,0);
+        return d;
+      }
+
+      // String "DD-MM-AAAA" o "DD-MM-AA"
+      if (typeof v === "string"){
+        const s = v.trim().replace(/\./g,'-').replace(/\//g,'-');
+        const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{2}|\d{4})$/);
+        if (m){
+          let d  = parseInt(m[1],10);
+          let mo = parseInt(m[2],10);
+          let y  = parseInt(m[3],10);
+          if (y < 100) y += 2000;
+          const dt = new Date(y, mo-1, d);
+          dt.setHours(0,0,0,0);
+          return isNaN(dt) ? null : dt;
+        }
+        // Fallback al parser nativo
+        const dt2 = new Date(s);
+        if (!isNaN(dt2)){ dt2.setHours(0,0,0,0); return dt2; }
+      }
+
+      // Date ya válido
+      if (v instanceof Date && !isNaN(v)){ const d = new Date(v.getTime()); d.setHours(0,0,0,0); return d; }
+
+      return null;
+    }
+
     const today0 = () => { const d=new Date(); d.setHours(0,0,0,0); return d; };
     const fmt = (n) => new Intl.NumberFormat("es-CL").format(n);
     const isFinalizado = (txt) => { const t = normalizeKey(txt); return t==="finalizado"||t==="finalizada"||t==="cerrado"||t==="completado"||t==="completada"; };
     const isOnHold = (txt) => { const t=normalizeKey(txt); return t==="on hold"||t==="onhold"; };
 
     function pick(obj, aliases){ for (const a of aliases){ if (a in obj) return obj[a]; } return undefined; }
+
     function normalizeRow(r){
-      // Si viene "Tareas" en el JSON, mapear a "Tarea" antes de leer alias
+      // asegurar que si viene "Tareas" lo usemos como nombre de tarea
       if (r["Tareas"] && !r["Tarea"]) r["Tarea"] = r["Tareas"];
+
+      const d = toDate(pick(r, FIELD_MAP.deadline));
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tarea:     normStr(pick(r, FIELD_MAP.tarea)),
+        tarea:     normStr(pick(r, FIELD_MAP.tarea)), // mapeado desde "Tareas"
         tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
-        deadline:  toDate(pick(r, FIELD_MAP.deadline)),
+        deadline:  d,
+        deadlineTS: d ? d.getTime() : 0,
         _raw: r
       };
     }
@@ -279,9 +318,6 @@
     }
 
     /* ===== Gauge helpers ===== */
-    // Identificador robusto de TAREA:
-    // - si tipo === "tarea", o
-    // - si existe texto en el campo "tarea" (por ejemplo porque viene de hoja "Tareas" col. D)
     function isTaskRow(r){
       const t = (r.tipo || "").toLowerCase();
       return t === "tarea" || (!!r.tarea && r.tarea.trim().length > 0);
@@ -335,7 +371,7 @@
         options: {
           responsive: true,
           cutout: '70%',
-          // rotation: -90, circumference: 180,  // <- descomenta para semi-gauge
+          // rotation: -90, circumference: 180, // semi-gauge si lo prefieres
           plugins: {
             legend: { display: false },
             tooltip: { callbacks: { label: (i) => `${i.label}: ${i.raw} (${pct}%)` } }
@@ -350,11 +386,11 @@
     let sortState = { key: null, dir: 1 };
     const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
     function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
-    function cmpDate(a,b){ const ax = a ? a.getTime() : 0; const bx = b ? b.getTime() : 0; return ax - bx; }
+    function cmpDate(a,b){ return (a?.deadlineTS || 0) - (b?.deadlineTS || 0); }
 
-    /* ================== Tabla (columna Tarea + filas rojas atrasadas) ================== */
+    /* ================== Tabla (columna Tareas + filas rojas atrasadas) ================== */
     function renderTable(){
-      const labels = ["Cliente","Proyecto","Tarea","Tipo","Estatus","Owner","Deadline"];
+      const labels = ["Cliente","Proyecto","Tareas","Tipo","Estatus","Owner","Deadline"];
       const thead = document.querySelector("#tbl thead");
       const tbody = document.querySelector("#tbl tbody");
 
@@ -368,8 +404,7 @@
       if (sortState.key){
         const idx = SORT_KEYS.indexOf(sortState.key);
         rows.sort((a,b)=>{
-          let res = SORT_KEYS[idx] === "deadline" ? cmpDate(a.deadline, b.deadline)
-                                                  : cmpText(a[SORT_KEYS[idx]], b[SORT_KEYS[idx]]);
+          let res = SORT_KEYS[idx] === "deadline" ? cmpDate(a, b) : cmpText(a[SORT_KEYS[idx]], b[SORT_KEYS[idx]]);
           return res * sortState.dir;
         });
       } else {
@@ -383,7 +418,6 @@
       const hoy = today0().getTime();
 
       tbody.innerHTML = rows.map(r=>{
-        // Tarea atrasada = es tarea (según isTaskRow), no finalizada y deadline pasado
         const overdue = isTaskRow(r) && !isFinalizado(r.estatus) && r.deadline && r.deadline.getTime() < hoy;
         const rowStyle = overdue ? 'style="color:#d62728"' : '';
 
@@ -394,7 +428,7 @@
           r.tipo || "",
           r.estatus || "",
           r.owner || "",
-          r.deadline ? r.deadline.toLocaleDateString() : ""
+          r.deadline ? `${String(r.deadline.getDate()).padStart(2,'0')}-${String(r.deadline.getMonth()+1).padStart(2,'0')}-${r.deadline.getFullYear()}` : ""
         ];
         return `<tr ${rowStyle}>` + cells.map(c=>`<td>${c??""}</td>`).join("") + "</tr>";
       }).join("");
@@ -412,39 +446,39 @@
       });
     }
 
-    /* ================== Carga Excel (+ hard cap y anclaje de cliente) ================== */
+    /* ================== Carga Excel (+ usa cache-buster y fuerza col D "Tareas") ================== */
     async function loadExcel(){
-      const res = await fetch(EXCEL_FILE);
+      const excelUrl = await computeExcelUrl();
+      const res = await fetch(excelUrl, { cache: "no-store" });
       if(!res.ok){ alert("No pude cargar el Excel"); return; }
       const buf = await res.arrayBuffer();
       const wb  = XLSX.read(buf, {type:"array"});
 
-      // Preferir hoja "Tareas" si existe, si no usar la primera
       const sheetName = wb.SheetNames.includes("Tareas") ? "Tareas" : wb.SheetNames[0];
       const sheet = wb.Sheets[sheetName];
 
       // 1) A objetos por encabezados
       const rowsObj = XLSX.utils.sheet_to_json(sheet, {defval:""});
 
-      // 2) Fallbacks para nombre de tarea:
-      //   - si hoja es "Tareas", forzar columna D como "Tarea"
-      //   - si hay campo "Tareas", copiar a "Tarea"
+      // 2) Si la hoja es "Tareas", forzar columna D como "Tareas" (y "Tarea")
       if (sheet["!ref"]) {
         const range = XLSX.utils.decode_range(sheet["!ref"]);
         rowsObj.forEach((row, idx) => {
-          if (row["Tareas"] && !row["Tarea"]) row["Tarea"] = row["Tareas"];
           if (sheetName === "Tareas") {
             const excelRowNumber = range.s.r + 1 + 1 + idx; // +1 base1, +1 encabezado
             const cellAddr = "D" + excelRowNumber; // Columna D
             const cell = sheet[cellAddr];
             const valD = cell ? cell.v : "";
-            if (!row["Tarea"] && valD !== undefined) row["Tarea"] = valD;
+            if (!row["Tareas"] && valD !== undefined) row["Tareas"] = valD;
           }
+          // Copia de seguridad a "Tarea"
+          if (row["Tareas"] && !row["Tarea"]) row["Tarea"] = row["Tareas"];
         });
       }
 
       RAW = rowsObj.map(normalizeRow);
 
+      // Anclaje por cliente si viene por URL
       const clientesParam = parseClienteParam();
       if (clientesParam && clientesParam.length) {
         RAW = RAW.filter(r => clientesParam.includes(normalizeKey(r.cliente)));
@@ -473,10 +507,7 @@
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
       return hashHex === GENERAL_VIEW_HASH;
     }
-    function shouldRequirePassword(){
-      const c = parseClienteParam();
-      return !c || c.length === 0;
-    }
+    function shouldRequirePassword(){ const c = parseClienteParam(); return !c || c.length === 0; }
     function showPasswordOverlay(){
       const overlay = document.createElement('div');
       overlay.className = 'overlay';
@@ -540,112 +571,3 @@
   </script>
 </body>
 </html>
-name: Deploy dashboard to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'index.html'
-      - 'Template_Proyectos_Dashboard.xlsx'
-      - '.github/workflows/deploy.yml'
-  workflow_dispatch: {}
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # (Opcional) genera un "cache-buster" para evitar caché del Excel en CDNs
-      - name: Create cache-buster
-        run: |
-          date +%s > cache-bust.txt
-
-      # Sube todo el repo como artefacto para Pages (no hay build)
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-name: Deploy dashboard to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'index.html'
-      - 'Template_Proyectos_Dashboard.xlsx'
-      - '.github/workflows/deploy.yml'
-  workflow_dispatch: {}
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      # (Opcional) genera un "cache-buster" para evitar caché del Excel en CDNs
-      - name: Create cache-buster
-        run: |
-          date +%s > cache-bust.txt
-
-      # Sube todo el repo como artefacto para Pages (no hay build)
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-const EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx?v=" + Date.now();
-let EXCEL_FILE = "Template_Proyectos_Dashboard.xlsx"; // valor base
-
-async function computeExcelUrl(){
-  try {
-    const r = await fetch("cache-bust.txt", { cache: "no-store" });
-    if (r.ok) {
-      const v = (await r.text()).trim();
-      return `${EXCEL_FILE}?v=${encodeURIComponent(v)}`;
-    }
-  } catch {}
-  return `${EXCEL_FILE}?v=${Date.now()}`; // fallback local
-}
