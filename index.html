@@ -90,7 +90,7 @@
     const FIELD_MAP = {
       cliente:   ["Cliente","Account","Empresa"],
       proyecto:  ["Proyecto","Nombre Proyecto","Project"],
-      tarea:     ["Tareas","Tarea","Actividad","Nombre Tarea","Task","Actividad/Tarea"],
+      tareas:     ["Tareas","Tareas","Actividad","Nombre Tareas","Task","Actividad/Tareas"],
       tipo:      ["Tipo","Category"],
       estatus:   ["Estatus","Estado","Status"],
       owner:     ["Owner","Responsable","Asignado","Ejecutor"],
@@ -168,14 +168,14 @@
     }
 
     function normalizeRow(r){
-      // usar "Tareas" si viene y volcar a "Tarea" para los alias
-      if (r["Tareas"] && !r["Tarea"]) r["Tarea"] = r["Tareas"];
+      // usar "Tareas" si viene y volcar a "Tareas" para los alias
+      if (r["Tareas"] && !r["Tareas"]) r["Tareas"] = r["Tareas"];
 
       const d = toDate(pick(r, FIELD_MAP.deadline));
       return {
         cliente:   normStr(pick(r, FIELD_MAP.cliente)),
         proyecto:  normStr(pick(r, FIELD_MAP.proyecto)),
-        tarea:     normStr(pick(r, FIELD_MAP.tarea)),
+        tareas:     normStr(pick(r, FIELD_MAP.tareas)),
         tipo:      normStr(pick(r, FIELD_MAP.tipo)).toLowerCase(),
         estatus:   normStr(pick(r, FIELD_MAP.estatus)),
         owner:     normStr(pick(r, FIELD_MAP.owner)),
@@ -312,7 +312,7 @@
     /* ===== Gauge ===== */
     function isTaskRow(r){
       const t = (r.tipo || "").toLowerCase();
-      return t === "tarea" || (!!r.tarea && r.tarea.trim().length > 0);
+      return t === "tareas" || (!!r.tareas && r.tareas.trim().length > 0);
     }
 
     const GaugeTextPlugin = {
@@ -367,7 +367,7 @@
 
     /* ===== Tabla ===== */
     let sortState = { key: null, dir: 1 };
-    const SORT_KEYS = ["cliente","proyecto","tarea","tipo","estatus","owner","deadline"];
+    const SORT_KEYS = ["cliente","proyecto","tareas","tipo","estatus","owner","deadline"];
     function cmpText(a,b){ return (a||"").toString().localeCompare((b||"").toString(), "es", {sensitivity:"base"}); }
     function cmpDate(a,b){ return (a?.deadlineTS || 0) - (b?.deadlineTS || 0); }
 
@@ -393,7 +393,7 @@
         rows.sort((a,b)=>{
           const c = cmpText(a.cliente, b.cliente); if (c) return c;
           const p = cmpText(a.proyecto, b.proyecto); if (p) return p;
-          return cmpText(a.tarea, b.tarea);
+          return cmpText(a.tareas, b.tareas);
         });
       }
 
@@ -406,7 +406,7 @@
         const cells = [
           r.cliente || "",
           r.proyecto || "",
-          r.tarea || "",
+          r.tareas || "",
           r.tipo || "",
           r.estatus || "",
           r.owner || "",
@@ -456,7 +456,7 @@
             const valD = cell ? cell.v : "";
             if (!row["Tareas"] && valD !== undefined) row["Tareas"] = valD;
           }
-          if (row["Tareas"] && !row["Tarea"]) row["Tarea"] = row["Tareas"];
+          if (row["Tareas"] && !row["Tarea"]) row["Tareas"] = row["Tareas"];
         });
       }
 
