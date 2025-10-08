@@ -1,65 +1,56 @@
 @echo off
-setlocal ENABLEDELAYEDEXPANSION
-REM === Publica cambios del dashboard en GitHub (branch main) ===
+setlocal enabledelayedexpansion
 
-REM 1) Ir a la carpeta del script
-cd /d "%~dp0"
+REM === Config ===
+set EXCEL=Template_Proyectos_Dashboard.xlsx
+set JSON=data.json
+set VENV=.venv
 
-REM 2) Validar que es un repo Git
-git rev-parse --is-inside-work-tree >NUL 2>&1
+echo.
+echo ==== Dashboard: Actualizacion de datos ====
+echo.
+
+REM 1) Verifica Python
+where python >nul 2>nul
 if errorlevel 1 (
-  echo [ERROR] Esta carpeta no es un repositorio Git.
-  echo Abre una terminal aqui y ejecuta:
-  echo   git init
-  echo   git branch -M main
-  echo   git remote add origin https://github.com/cristobalalfaro-cmd/dashboard-proyectos.git
+  echo [x] Python no esta instalado o no esta en PATH.
+  echo     Instala Python 3.10+ desde https://www.python.org/downloads/ y reintenta.
   pause
   exit /b 1
 )
 
-REM 3) Asegurar branch main
-git rev-parse --abbrev-ref HEAD | findstr /i "main" >NUL
-if errorlevel 1 (
-  echo [INFO] Cambiando/creando branch main...
-  git checkout -B main
+REM 2) Crea venv si no existe
+if not exist "%VENV%\Scripts\python.exe" (
+  echo [*] Creando entorno virtual...
+  python -m venv "%VENV%"
 )
 
-REM 4) Asegurar remoto "origin"
-git remote get-url origin >NUL 2>&1
+REM 3) Instala dependencias
+echo [*] Instalando dependencias (pandas, openpyxl)...
+"%VENV%\Scripts\python" -m pip install -q --upgrade pip
+"%VENV%\Scripts\python" -m pip install -q pandas openpyxl
+
+REM 4) Ejecuta conversion Excel -> JSON
+echo [*] Convirtiendo "%EXCEL%" a "%JSON%"...
+"%VENV%\Scripts\python" convert_excel_to_json.py
 if errorlevel 1 (
-  echo [INFO] Configurando remoto origin...
-  git remote add origin https://github.com/cristobalalfaro-cmd/dashboard-proyectos.git
-)
-
-REM 5) Traer ultimos cambios para evitar conflictos (ignora si no hay)
-git pull --ff-only origin main >NUL 2>&1
-
-REM 6) Agregar todo
-git add -A
-
-REM 7) Timestamp robusto (independiente de la region) con PowerShell
-for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm-ss"') do set TS=%%I
-set "MSG=auto: publish %TS%"
-
-REM 8) Commit solo si hay cambios staged
-git diff --cached --quiet
-if errorlevel 1 (
-  git commit -m "%MSG%"
-) else (
-  echo [INFO] No hay cambios para commitear.
-)
-
-REM 9) Push a main
-git push -u origin main
-if errorlevel 1 (
-  echo [ERROR] Fallo el push. Revisa tu conexion o permisos del repo.
+  echo [x] Error en la conversion. Revisa mensajes arriba.
   pause
   exit /b 1
 )
 
+REM 5) Toca cache-bust (opcional) para forzar despliegue
+for /f "tokens=1-4 delims=/:. " %%a in ("%date% %time%") do set TS=%%a-%%b-%%c_%%d
+echo %TS%> cache-bust.txt
+
+REM 6) Commit + push
+echo [*] Publicando a GitHub...
+git add "%JSON%" cache-bust.txt "%EXCEL%" 2>nul
+git commit -m "auto: publish %date% %time%" || echo (sin cambios que commitear)
+git push origin main
+
 echo.
-echo ✔ Publicado. Abre tu sitio y recarga con Ctrl+F5:
-echo   https://cristobalalfaro-cmd.github.io/dashboard-proyectos/
+echo [✓] Listo. En ~30-60s deberias ver los datos nuevos online.
+echo     Si no ves cambios, recarga con Ctrl+F5 o desregistra el SW en DevTools.
 echo.
-echo Si necesitas forzar un redeploy sin cambios, ejecuta: force-rebuild.bat
 pause

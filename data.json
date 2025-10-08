@@ -138,7 +138,7 @@
     "Tipo": "Proyecto",
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
-    "Tareas": "Entrega PPT Kick off Data Driven",
+    "Tareas": "Desarrollo PPT Kick off Data Driven",
     "Deadline": 1759449600000,
     "Estatus": "Finalizado",
     "Owner": "Cristóbal Alfaro"
@@ -264,16 +264,16 @@
     "Tipo": "Proyecto",
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
-    "Tareas": "Revisión Data Lake (RRHH y logística)",
-    "Deadline": 1760054400000,
-    "Estatus": "Iniciado en plazo",
-    "Owner": "Cristóbal Alfaro"
+    "Tareas": "Acceso Data Lake (RRHH y logística)",
+    "Deadline": 1759449600000,
+    "Estatus": "Atrasado",
+    "Owner": "Osvaldo Muñoz"
   },
   {
     "Tipo": "Proyecto",
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
-    "Tareas": "Diseño PPTT Kick off Champions",
+    "Tareas": "Entrega diseño PPT Kick off Champions",
     "Deadline": 1760054400000,
     "Estatus": "Iniciado en plazo",
     "Owner": "Cristóbal Alfaro"
@@ -291,10 +291,10 @@
     "Tipo": "Proyecto",
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
-    "Tareas": "Kick Off Champions",
+    "Tareas": "Reunión Kick Off Champions",
     "Deadline": 1760313600000,
     "Estatus": "No iniciado",
-    "Owner": "Cristóbal Alfaro"
+    "Owner": "Marcela y Osvaldo"
   },
   {
     "Tipo": "Proyecto",
@@ -363,10 +363,10 @@
     "Tipo": "Proyecto",
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
-    "Tareas": "Kick off cultura Data-Driven",
+    "Tareas": "Reunión Kick off cultura Data-Driven",
     "Deadline": 1760918400000,
     "Estatus": "No iniciado",
-    "Owner": "Cristóbal Alfaro"
+    "Owner": "Marcela y Osvaldo"
   },
   {
     "Tipo": "Proyecto",
@@ -580,7 +580,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Estudio / alineamiento modelo de datos área Comercial",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -589,7 +589,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Diseño formación sesiones embajadores área Comercial",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -598,7 +598,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Diseño formación sesiones equipos área Comercial",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -607,7 +607,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Formación de Embajadores área Comercial: Modelo de Datos",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -616,7 +616,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Formación de Embajadores área Comercial: Entrenamiento y certificación de sus equipos",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -625,7 +625,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Capacitación área Comercial: Sensibilización + introducción al modelo, propósito, expectativas.",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -634,7 +634,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Entrenamiento área Comercial: Uso de Datos (desarrollo de skills técnicas iniciales)",
-    "Deadline": 1761955200000,
+    "Deadline": 1763164800000,
     "Estatus": "On hold",
     "Owner": "Cristóbal Alfaro"
   },
@@ -646,5 +646,23 @@
     "Deadline": 1761523200000,
     "Estatus": "No iniciado",
     "Owner": "Encargados de Hotel"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Validación PPT Kick off Champions",
+    "Deadline": 1760313600000,
+    "Estatus": "No iniciado",
+    "Owner": "Marcela y Osvaldo"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Validación PPT Kick off cultura Data Driven",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Marcela y Osvaldo"
   }
 ]
