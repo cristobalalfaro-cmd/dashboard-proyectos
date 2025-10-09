@@ -2,8 +2,8 @@ name: Enviar alertas de deadlines
 
 on:
   schedule:
-    - cron: "0 12 * * *"   # todos los días 12:00 UTC (~09:00 en Chile UTC-3)
-  workflow_dispatch: {}     # permite gatillarlo manualmente
+    - cron: "0 12 * * *"   # 12:00 UTC ≈ 09:00 Chile (UTC-3)
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,14 +20,15 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install deps
-        run: npm ci
+      # Instalamos solo lo necesario para el script
+      - name: Install runtime deps
+        run: npm install xlsx nodemailer dayjs
 
       - name: Run alerts
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}          # ej: 587
-          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}  # tu correo/app user
-          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}  # tu app password
-          ALERT_TO: ${{ secrets.ALERT_TO }}            # opcional (por defecto del PM)
-        run: npm run alertas
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
+        run: node scripts/check-deadlines.js
