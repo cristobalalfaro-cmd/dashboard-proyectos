@@ -381,7 +381,7 @@
     "Tipo": "Proyecto",
     "Cliente": "Promet",
     "Proyecto": "Onboarding",
-    "Tareas": "Validación contenidos + agregar info propia de cada hotel",
+    "Tareas": "Validación contenidos + agregar info propia de cada hotel por parte de los Encargados de Personas de cada Hotel",
     "Deadline": 1760918400000,
     "Estatus": "No iniciado",
     "Owner": "Encargados de Hotel"
@@ -408,7 +408,7 @@
     "Tipo": "Proyecto",
     "Cliente": "Promet",
     "Proyecto": "Onboarding",
-    "Tareas": "Diseño gráfico presentaciones (todos los módulos)",
+    "Tareas": "Diseño gráfico presentacion inducción completa (todos los módulos)",
     "Deadline": 1761523200000,
     "Estatus": "No iniciado",
     "Owner": "Jorge García (Sprint)"
@@ -537,7 +537,7 @@
     "Tareas": "Kick Off Nuevo proceso de Inducción + Piloto Coaching rol de Aux Aseo.",
     "Deadline": 1763337600000,
     "Estatus": "No iniciado",
-    "Owner": "Cristóbal Alfaro"
+    "Owner": "Daniela Romo"
   },
   {
     "Tipo": "Proyecto",
@@ -664,5 +664,14 @@
     "Deadline": 1760659200000,
     "Estatus": "No iniciado",
     "Owner": "Marcela y Osvaldo"
+  },
+  {
+    "Tipo": "Proyecto",
+    "Cliente": "Ópticas Schilling",
+    "Proyecto": "Data Lake",
+    "Tareas": "Diseño Gráfico Kick Off General y Kick off para los Champions",
+    "Deadline": 1760313600000,
+    "Estatus": "No iniciado",
+    "Owner": "Jorge García (Sprint)"
   }
 ]
