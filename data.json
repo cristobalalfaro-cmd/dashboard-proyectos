@@ -113,12 +113,12 @@
     "Proyecto": "Onboarding",
     "Tareas": "Desarrollo contenidos inducción hotelería",
     "Deadline": 1759104000000,
-    "Estatus": "Finalizado",
+    "Estatus": "Iniciado",
     "Owner": "Cristóbal Alfaro"
   },
   {
     "Tipo": "Propuesta",
-    "Cliente": "BioNet",
+    "Cliente": "Sprint/BioNet",
     "Proyecto": "Modelo de atención",
     "Tareas": "Elaboración de propuesta",
     "Deadline": 1759276800000,
@@ -139,8 +139,8 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Desarrollo PPT Kick off Data Driven",
-    "Deadline": 1759449600000,
-    "Estatus": "Finalizado",
+    "Deadline": 1760486400000,
+    "Estatus": "Iniciado",
     "Owner": "Cristóbal Alfaro"
   },
   {
@@ -199,11 +199,11 @@
   },
   {
     "Tipo": "Proyecto",
-    "Cliente": "BioNet",
+    "Cliente": "Sprint/BioNet",
     "Proyecto": "Modelo de atención",
     "Tareas": "Propuesta financiera",
     "Deadline": 1759708800000,
-    "Estatus": "Iniciado en plazo",
+    "Estatus": "Finalizado",
     "Owner": "Cristóbal Alfaro"
   },
   {
@@ -212,7 +212,7 @@
     "Proyecto": "Onboarding",
     "Tareas": "Desarrollo contenidos Cultura de Servicio",
     "Deadline": 1759708800000,
-    "Estatus": "Finalizado",
+    "Estatus": "Iniciado",
     "Owner": "Cristóbal Alfaro"
   },
   {
@@ -221,7 +221,7 @@
     "Proyecto": "Onboarding",
     "Tareas": "Desarrollo contenidos Habilitación Colaboradores",
     "Deadline": 1759708800000,
-    "Estatus": "Finalizado",
+    "Estatus": "Iniciado",
     "Owner": "Cristóbal Alfaro"
   },
   {
@@ -284,7 +284,7 @@
     "Proyecto": "Licitación modelo gestión instructores",
     "Tareas": "Elaboración de propuesta",
     "Deadline": 1759795200000,
-    "Estatus": "No iniciado",
+    "Estatus": "Finalizado",
     "Owner": "Loreto Naranjo"
   },
   {
@@ -292,7 +292,7 @@
     "Cliente": "Ópticas Schilling",
     "Proyecto": "Data Lake",
     "Tareas": "Reunión Kick Off Champions",
-    "Deadline": 1760313600000,
+    "Deadline": 1760572800000,
     "Estatus": "No iniciado",
     "Owner": "Marcela y Osvaldo"
   },
@@ -311,7 +311,7 @@
     "Proyecto": "Onboarding",
     "Tareas": "Revisión de contenidos",
     "Deadline": 1759708800000,
-    "Estatus": "Finalizado",
+    "Estatus": "Iniciado",
     "Owner": "Encargados de Hotel"
   },
   {
@@ -671,7 +671,97 @@
     "Proyecto": "Data Lake",
     "Tareas": "Diseño Gráfico Kick Off General y Kick off para los Champions",
     "Deadline": 1760313600000,
-    "Estatus": "No iniciado",
+    "Estatus": "Iniciado",
     "Owner": "Jorge García (Sprint)"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Check Persons/Komatsu",
+    "Proyecto": "Legacy 2",
+    "Tareas": "Reunión 14 de Octubre (Levantamiento)",
+    "Deadline": 1760400000000,
+    "Estatus": "Iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Komatsu-Cummins",
+    "Proyecto": "Licitación modelo gestión instructores",
+    "Tareas": "Seguimiento propuesta",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Meikitisy/Honda",
+    "Proyecto": "Mistery Shoper",
+    "Tareas": "Seguimiento",
+    "Deadline": 1760659200000,
+    "Estatus": "Iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Sprint/Construmart",
+    "Proyecto": "Construmart - Estudio Cultura",
+    "Tareas": "Presentación propuesta",
+    "Deadline": 1760918400000,
+    "Estatus": "Iniciado",
+    "Owner": "Cristóbal Alfaro"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Smart Mining",
+    "Proyecto": "Headhunting Full Stack",
+    "Tareas": "Reclutamiento",
+    "Deadline": 1760400000000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Smart Mining",
+    "Proyecto": "Headhunting Full Stack",
+    "Tareas": "Entrevistas",
+    "Deadline": 1760659200000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Smart Mining",
+    "Proyecto": "Headhunting Full Stack",
+    "Tareas": "Envío de candidatos",
+    "Deadline": 1760918400000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Smart Mining",
+    "Proyecto": "Headhunting Full Stack",
+    "Tareas": "Entrevistas con cliente",
+    "Deadline": 1761523200000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Smart Mining",
+    "Proyecto": "Headhunting Full Stack",
+    "Tareas": "Evaluación psicolaboral",
+    "Deadline": 1761782400000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
+  },
+  {
+    "Tipo": "Propuesta",
+    "Cliente": "Smart Mining",
+    "Proyecto": "Headhunting Full Stack",
+    "Tareas": "Cierre y facturación",
+    "Deadline": 1763078400000,
+    "Estatus": "No iniciado",
+    "Owner": "Loreto Naranjo"
   }
 ]
