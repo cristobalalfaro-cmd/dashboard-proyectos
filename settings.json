@@ -1,0 +1,11 @@
+{
+  "dashboardTitle": "Dashboard de Proyectos",
+  "sheetNameFallback": "Proyectos",
+  "filters": [
+    "cliente",
+    "proyecto",
+    "owner",
+    "estatus"
+  ],
+  "dateColumn": "deadline"
+}

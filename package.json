@@ -1,0 +1,15 @@
+{
+  "name": "dashboard-proyectos",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "alertas": "node scripts/alertas.js",
+    "alertas:dry": "node scripts/alertas.js --dry-run"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "nodemailer": "^6.9.13",
+    "xlsx": "^0.18.5"
+  }
+}

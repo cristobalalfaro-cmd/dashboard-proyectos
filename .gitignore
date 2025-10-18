@@ -1,0 +1,28 @@
+# Python venv and caches
+.venv/
+__pycache__/
+*.pyc
+
+# Node modules and logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Build/Actions artifacts
+dist/
+.cache/
+*.zip
+
+# Excel templates (we keep only the one in root)
+data/*.xlsx
+!Template_Proyectos_Dashboard.xlsx

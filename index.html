@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Dashboard de Proyectos</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="manifest" href="manifest.json"/>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="title">Dashboard de Proyectos</h1>
+
+    <div class="kpis">
+      <div class="kpi"><div class="badge">Total</div><div id="kpi-total" style="font-size:22px;font-weight:700;margin-top:6px">–</div></div>
+      <div class="kpi"><div class="badge">Finalizadas</div><div id="kpi-done" style="font-size:22px;font-weight:700;margin-top:6px">–</div></div>
+      <div class="kpi"><div class="badge">Atrasadas</div><div id="kpi-late" style="font-size:22px;font-weight:700;margin-top:6px">–</div></div>
+      <div class="kpi"><div class="badge">≤ 7 días</div><div id="kpi-soon" style="font-size:22px;font-weight:700;margin-top:6px">–</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Filtros</h3>
+      <div class="filters">
+        <input id="q" placeholder="Buscar texto… (cliente / proyecto / tareas)"/>
+        <select id="f-cliente"><option value="">Cliente (todos)</option></select>
+        <select id="f-proyecto"><option value="">Proyecto (todos)</option></select>
+        <select id="f-owner"><option value="">Owner (todos)</option></select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="view-tabs">
+        <button class="tab active" data-view="todo">Detalle (todas)</button>
+        <button class="tab" data-view="finalizadas">Actividades finalizadas</button>
+        <button class="tab" data-view="urgentes">Atrasadas y/o próximas</button>
+        <button class="tab" data-view="programadas">Programadas plazo mayor</button>
+      </div>
+      <div class="table">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th data-sort="cliente">Cliente</th>
+              <th data-sort="proyecto">Proyecto</th>
+              <th data-sort="tareas">Tareas</th>
+              <th data-sort="tipo">Tipo</th>
+              <th data-sort="estatus">Estatus</th>
+              <th data-sort="owner">Owner</th>
+              <th data-sort="deadline">Deadline</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+          <tfoot><tr><td colspan="7" id="count">0 filas</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <footer>© PMO – Cristóbal Alfaro</footer>
+  </div>
+
+<script>
+(async function(){
+  const res = await fetch("data.json?cb="+Date.now());
+  const rows = await res.json();
+  const settings = await fetch("settings.json").then(r=>r.json());
+  document.getElementById("title").textContent = settings.dashboardTitle || "Dashboard";
+
+  const q = document.getElementById("q");
+  const fCli = document.getElementById("f-cliente");
+  const fProy = document.getElementById("f-proyecto");
+  const fOwn = document.getElementById("f-owner");
+  const tbody = document.getElementById("tbody");
+  const count = document.getElementById("count");
+  const tabs = [...document.querySelectorAll(".tab")];
+  let curView = "todo";
+  let curSort = { key: "deadline", dir: 1 };
+
+  // Normalize helpers
+  const norm = s => (s??"").toString().trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  const toDate = v => v ? new Date(v) : null;
+  rows.forEach(r=>{ r.deadline = r.deadline ? r.deadline : null; });
+
+  // Fill filters
+  const uniq = (arr)=>[...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+
+  function fillSelect(sel, list, label){
+    sel.innerHTML = "<option value=''>"+label+" (todos)</option>" + uniq(list).map(v=>`<option value="${v}">${v}</option>`).join("");
+  }
+  fillSelect(fCli, rows.map(r=>r.cliente), "Cliente");
+  fillSelect(fProy, rows.map(r=>r.proyecto), "Proyecto");
+  fillSelect(fOwn, rows.map(r=>r.owner), "Owner");
+
+  // KPIs
+  function isDone(r){
+    const t = norm(r.estatus);
+    return ["finalizado","finalizada","cerrado","completado","completada"].includes(t);
+  }
+  function kpis(data){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const soonDays = 7*86400000;
+    const done = data.filter(isDone).length;
+    const late = data.filter(r=>!isDone(r) && r.deadline && new Date(r.deadline) < today).length;
+    const soon = data.filter(r=>!isDone(r) && r.deadline && (new Date(r.deadline)-today)<=soonDays && (new Date(r.deadline)-today)>=0).length;
+    document.getElementById("kpi-total").textContent = data.length;
+    document.getElementById("kpi-done").textContent = done;
+    document.getElementById("kpi-late").textContent = late;
+    document.getElementById("kpi-soon").textContent = soon;
+  }
+
+  // Filter + view
+  function filtered(){
+    const query = norm(q.value);
+    const c = fCli.value, p=fProy.value, o=fOwn.value;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const weekAhead = 14*86400000; // atrasadas y/o próximas: semana en curso o siguiente
+
+    return rows.filter(r=>{
+      if (c && r.cliente !== c) return false;
+      if (p && r.proyecto !== p) return false;
+      if (o && r.owner !== o) return false;
+      if (query){
+        const hay = [r.cliente,r.proyecto,r.tareas,r.estatus,r.owner].some(x=>norm(x).includes(query));
+        if (!hay) return false;
+      }
+      // view filters
+      const dl = r.deadline ? new Date(r.deadline) : null;
+      const done = isDone(r);
+      if (curView==="finalizadas") return done;
+      if (curView==="urgentes"){
+        if (done || !dl) return false;
+        const diff = dl - today;
+        return diff < 0 || diff <= weekAhead;
+      }
+      if (curView==="programadas"){
+        // no entra en urgentes ni finalizadas
+        if (done) return false;
+        if (!dl) return true;
+        const diff = dl - today;
+        return diff > weekAhead;
+      }
+      return true;
+    });
+  }
+
+  function render(){
+    const data = filtered().sort((a,b)=>{
+      const ka = a[curSort.key] ?? "";
+      const kb = b[curSort.key] ?? "";
+      if (curSort.key==="deadline"){
+        const da = ka? new Date(ka).getTime(): 0;
+        const db = kb? new Date(kb).getTime(): 0;
+        return (da-db)*curSort.dir;
+      }
+      return ka.toString().localeCompare(kb.toString(),'es')*curSort.dir;
+    });
+
+    tbody.innerHTML = data.map(r=>{
+      let color = "#111";
+      const done = isDone(r);
+      const dl = r.deadline ? new Date(r.deadline) : null;
+      const today = new Date(); today.setHours(0,0,0,0);
+      if (done) color = "#16a34a";
+      else if (dl && dl<today) color = "#dc2626";
+      else color = "#111";
+      const fmt = dl ? dl.toLocaleDateString("es-CL") : "";
+      return `<tr style="color:${color}">
+        <td>${r.cliente||""}</td>
+        <td>${r.proyecto||""}</td>
+        <td>${r.tareas||""}</td>
+        <td>${r.tipo||""}</td>
+        <td>${r.estatus||""}</td>
+        <td>${r.owner||""}</td>
+        <td>${fmt}</td>
+      </tr>`;
+    }).join("");
+
+    count.textContent = data.length + " filas";
+    kpis(rows);
+  }
+
+  q.addEventListener("input", render);
+  fCli.addEventListener("change", render);
+  fProy.addEventListener("change", render);
+  fOwn.addEventListener("change", render);
+
+  document.querySelectorAll("th[data-sort]").forEach(th=>{
+    th.style.cursor="pointer";
+    th.addEventListener("click", ()=>{
+      const k = th.dataset.sort;
+      if (curSort.key===k) curSort.dir*=-1;
+      else {curSort.key=k; curSort.dir=1;}
+      render();
+    });
+  });
+
+  tabs.forEach(btn=>btn.addEventListener("click", ()=>{
+    tabs.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    curView = btn.dataset.view;
+    render();
+  }));
+
+  render();
+})();
+</script>
+</body>
+</html>
