@@ -1,31 +1,34 @@
 @echo off
 setlocal enabledelayedexpansion
-REM =========================================================
-REM  Dashboard: Actualización de datos  (Windows .BAT, seguro)
-REM  - NO modifica ni commitea archivos de código (index.html, styles.css, etc.)
-REM  - Solo publica: data.json y cache-bust.txt (y el Excel si cambió)
-REM  - Primero trae cambios remotos (pull --rebase)
-REM =========================================================
 
-REM 0) Ir a la RAÍZ del repo (donde está este .bat)
+rem =========================================================
+rem  Dashboard: Actualización de datos (segura / sin perder cambios)
+rem  - Detecta Python (py o python), crea/usa .venv
+rem  - pip: pandas, openpyxl
+rem  - Convierte Excel -> data.json (scripts\convert_excel_to_json.py)
+rem  - Actualiza cache-bust.txt
+rem  - Stash (si hay cambios) -> pull --rebase -> pop
+rem  - Commit/push SOLO de: data.json, cache-bust.txt, Template_Proyectos_Dashboard.xlsx
+rem =========================================================
+
+rem 0) Ir a la carpeta del .bat (raíz del repo)
 cd /d "%~dp0"
+
+rem Si por error quedó en /scripts, subir un nivel
 if not exist ".git" (
-  echo [x] No encuentro .git en esta carpeta. Asegúrate de ejecutar el .bat en la raiz del repo.
-  pause
-  exit /b 1
+  cd ..
 )
 
-REM 1) Config
 set "EXCEL=Template_Proyectos_Dashboard.xlsx"
 set "JSON=data.json"
 set "VENV=.venv"
+set "PYBIN="
 
 echo.
 echo ==== Dashboard: Actualizacion de datos (segura) ====
 echo.
 
-REM 2) Resolver Python (py o python)
-set "PYBIN="
+rem 1) Resolver Python
 where py >nul 2>nul && set "PYBIN=py -3"
 if not defined PYBIN (
   where python >nul 2>nul && set "PYBIN=python"
@@ -36,40 +39,62 @@ if not defined PYBIN (
   exit /b 1
 )
 
-REM 3) Crear venv si no existe
+rem 2) Crear venv si no existe
 if not exist "%VENV%\Scripts\python.exe" (
   echo [*] Creando entorno virtual...
   %PYBIN% -m venv "%VENV%"
 )
 
-REM 4) Instalar dependencias minimas
+rem 3) Instalar deps
 echo [*] Instalando dependencias (pandas, openpyxl)...
 "%VENV%\Scripts\python.exe" -m pip install -q --upgrade pip
 "%VENV%\Scripts\python.exe" -m pip install -q pandas openpyxl
 
-REM 5) Sincronizar PRIMERO con remoto (para no pisar cambios)
+rem 4) Traer cambios remotos de forma segura
 echo [*] Trayendo cambios remotos...
-git fetch origin
-REM Si no estamos en main, intentamos cambiar
+for /f "delims=" %%b in ('git status --porcelain') do set CHANGES=1
+
+set "STASH_NAME="
+if defined CHANGES (
+  echo [i] Hay cambios locales. Guardando temporalmente (stash)...
+  for /f "delims=" %%s in ('git stash push -u -m "auto-stash antes de actualizar"') do (
+    set "STASH_NAME=auto-stash antes de actualizar"
+  )
+)
+
+rem Asegurar estar en main
 for /f %%b in ('git branch --show-current') do set CUR=%%b
 if /I not "%CUR%"=="main" (
-  echo [i] Estabas en "%CUR%". Cambiando a "main" para publicar...
-  git checkout main || (echo [x] No se pudo cambiar a main. Revisa ramas. & pause & exit /b 1)
+  git fetch origin
+  git checkout main || (echo [x] No se pudo cambiar a branch main & pause & exit /b 1)
 )
-git pull --rebase origin main || (
-  echo [x] Hubo conflictos al hacer pull --rebase. Resuélvelos y vuelve a ejecutar.
+
+git pull --rebase origin main
+if errorlevel 1 (
+  echo [x] Hubo conflictos al hacer pull --rebase. Resuelvelos y vuelve a ejecutar.
+  echo     Sugerencia: git status, corrige conflictos, git add ., git rebase --continue
+  goto :END
+)
+
+rem Reaplicar el stash si existía
+if defined STASH_NAME (
+  echo [*] Reaplicando cambios locales...
+  git stash pop
+  if errorlevel 1 (
+    echo [!] El stash al reaplicarse genero conflictos.
+    echo     Revisa "git status", resuelve conflictos y luego ejecuta nuevamente este .bat.
+    goto :END
+  )
+)
+
+rem 5) Ejecutar conversion Excel -> JSON
+echo [*] Convirtiendo "%EXCEL%" a "%JSON%"...
+if not exist "%EXCEL%" (
+  echo [x] No se encontro "%EXCEL%" en la raiz del repo.
   pause
   exit /b 1
 )
 
-REM 6) Ejecutar conversion Excel -> JSON (NO toca archivos de codigo)
-echo [*] Convirtiendo "%EXCEL%" a "%JSON%"...
-if not exist "scripts\convert_excel_to_json.py" (
-  echo [x] Falta scripts\convert_excel_to_json.py
-  echo     Asegurate de tener la estructura del repo correcta.
-  pause
-  exit /b 1
-)
 "%VENV%\Scripts\python.exe" scripts\convert_excel_to_json.py
 if errorlevel 1 (
   echo [x] Error en la conversion. Revisa mensajes arriba.
@@ -77,42 +102,19 @@ if errorlevel 1 (
   exit /b 1
 )
 
-REM 7) Actualizar cache-bust (fuerza refresco en GitHub Pages)
+rem 6) Actualizar cache-bust (para forzar refresco en GitHub Pages)
 for /f "tokens=1-4 delims=/:. " %%a in ("%date% %time%") do set "TS=%%a-%%b-%%c_%%d"
 > cache-bust.txt echo %TS%
 
-REM 8) Preparar commit SOLO de generados
-echo [*] Preparando commit solo con generados...
-git add "%JSON%" cache-bust.txt 2>nul
-
-REM Si el Excel cambió y quieres publicarlo, descomenta la línea siguiente:
-REM git add "%EXCEL%" 2>nul
-
-REM 9) ¿Hay algo en staging? (evita commits vacíos)
-git diff --cached --quiet && (
-  echo (i) No hay cambios nuevos en archivos generados. Nada que publicar.
-  goto :PUSH
-)
-
-git commit -m "data: actualizar data.json y cache-bust (%date% %time%)"
-
-:PUSH
-REM 10) Push a main
-echo [*] Enviando a GitHub...
-git push origin main || (
-  echo [x] No se pudo hacer push. Revisa credenciales o conflictos.
-  pause
-  exit /b 1
-)
+rem 7) Commit/push de archivos generados
+echo [*] Publicando cambios generados...
+git add "%JSON%" cache-bust.txt "%EXCEL%" 2>nul
+git commit -m "auto: publish %date% %time%" || echo (sin cambios que commitear)
+git push origin main
 
 echo.
-echo [✓] Listo. En ~30-60s deberías ver datos nuevos online.
-echo     Sugerencia: Ctrl+F5 para forzar refresco del navegador.
+echo [✓] Listo. En ~30-60s deberias ver los datos nuevos online.
+echo     Si no ves cambios, Ctrl+F5 o limpia cache del navegador.
 echo.
-
-REM 11) Comprobaciones útiles (no cambia nada)
-echo [i] Comprobación rapida:
-echo     - index.html / styles.css / scripts del dashboard NO se tocaron.
-echo     - Solo se actualizaron: %JSON% y cache-bust.txt (y el Excel si lo agregaste).
-echo.
+:END
 pause
