@@ -41,7 +41,7 @@
   },
   {
     "cliente": "Check Persons/Komatsu",
-    "proyecto": "Legacy 2",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
     "tareas": "Propuesta enviada ($5.700.000)",
     "tipo": "Propuesta",
     "estatus": "Finalizado",
@@ -731,10 +731,10 @@
   },
   {
     "cliente": "Check Persons/Komatsu",
-    "proyecto": "Legacy 2",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
     "tareas": "Reunión 14 de Octubre (Levantamiento)",
     "tipo": "Propuesta",
-    "estatus": "Iniciado",
+    "estatus": "Finalizado",
     "owner": "Cristóbal Alfaro",
     "email": "cristobal.alfaro.s@outlook.com",
     "deadline": "2025-10-14"
@@ -861,10 +861,10 @@
   },
   {
     "cliente": "Komatsu-Cummins",
-    "proyecto": "Legacy Operaciones (2 roles)",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
     "tareas": "Armar Gantt y validar",
     "tipo": "Propuesta",
-    "estatus": "No iniciado",
+    "estatus": "Finalizado",
     "owner": "Cristóbal Alfaro",
     "email": "cristobal.alfaro.s@outlook.com",
     "deadline": "2025-10-15"
@@ -1208,5 +1208,15 @@
     "owner": "Loreto Naranjo",
     "email": "cristobal.alfaro.s@outlook.com",
     "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Licitación modelo gestión instructores",
+    "tareas": "Armar propuesta Técnica",
+    "tipo": "Propuesta",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-21"
   }
 ]
