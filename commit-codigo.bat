@@ -1,81 +1,36 @@
 @echo off
-setlocal enabledelayedexpansion
-chcp 65001 >nul
+setlocal
 
-rem === Ir a la carpeta del script (raíz del repo) ===
-cd /d "%~dp0"
+echo.
+echo ==== Commit rápido de cambios de código ====
+echo.
 
-rem === Verificar que estamos dentro de un repo git ===
-git rev-parse --is-inside-work-tree >nul 2>&1
-if errorlevel 1 (
-  echo [x] Esta carpeta no es un repositorio Git. Abre el repo correcto.
+:: Preguntar el mensaje del commit
+set /p MSG="Escribe el mensaje del commit (por ejemplo: 'Actualizo dashboard o alertas'): "
+
+if "%MSG%"=="" (
+  echo [x] No escribiste ningún mensaje. Cancelado.
   pause
-  exit /b 1
+  exit /b
 )
 
-rem === Branch actual (fallback a main si Git no responde) ===
-for /f "tokens=*" %%b in ('git branch --show-current') do set BR=%%b
-if "%BR%"=="" set "BR=main"
-
-echo.
-echo ==== Commit rapido de cambios ====
-echo Branch actual: %BR%
-echo.
-
-rem === Verificar si hay cambios pendientes ===
-git status --porcelain > "%TEMP%\_gs.txt"
-for /f %%c in ('type "%TEMP%\_gs.txt" ^| find /c /v ""') do set COUNT=%%c
-
-if "%COUNT%"=="0" (
-  echo [i] No hay cambios que comitear.
-  echo.
-  goto askpushmaybe
-)
-
-rem === Pedir mensaje de commit ===
-set /p MSG="Escribe el mensaje del commit (p.ej. 'Actualizo dashboard'): "
-if "%MSG%"=="" set "MSG=actualizacion rapida"
-
-rem === Add + commit ===
-git add -A
+:: Agrega todos los cambios y hace commit
+git add .
 git commit -m "%MSG%"
 if errorlevel 1 (
-  echo [!] No se pudo crear el commit (puede que no haya cambios nuevos).
-  del "%TEMP%\_gs.txt" 2>nul
-  echo.
+  echo [!] No se detectaron cambios o ya están comiteados.
   pause
-  exit /b 1
+  exit /b
 )
 
-:askpushmaybe
-echo.
+:: Opción: hacer push también automáticamente
 choice /m "¿Deseas subir (push) estos cambios a GitHub ahora?"
 if errorlevel 2 (
   echo [i] Cambios guardados localmente. No se subieron.
-  del "%TEMP%\_gs.txt" 2>nul
-  echo.
-  pause
-  exit /b 0
-)
-
-rem === pull --rebase antes de push para evitar rechazos ===
-git pull --rebase origin %BR%
-if errorlevel 1 (
-  echo [!] pull --rebase fallo. Resuelve conflictos y vuelve a ejecutar.
-  del "%TEMP%\_gs.txt" 2>nul
-  echo.
-  pause
-  exit /b 1
-)
-
-rem === push ===
-git push origin %BR%
-if errorlevel 1 (
-  echo [x] No se pudo subir. Revisa mensajes arriba.
 ) else (
-  echo [✓] Cambios subidos correctamente a origin/%BR%.
+  git push origin main
+  echo [✓] Cambios subidos correctamente.
 )
 
-del "%TEMP%\_gs.txt" 2>nul
 echo.
 pause
