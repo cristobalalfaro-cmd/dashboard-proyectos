@@ -2,119 +2,178 @@
 setlocal enabledelayedexpansion
 
 rem =========================================================
-rem  Dashboard: Actualización de datos (segura / sin perder cambios)
-rem  - Detecta Python (py o python), crea/usa .venv
-rem  - pip: pandas, openpyxl
-rem  - Convierte Excel -> data.json (scripts\convert_excel_to_json.py)
-rem  - Actualiza cache-bust.txt
-rem  - Stash (si hay cambios) -> pull --rebase -> pop
-rem  - Commit/push SOLO de: data.json, cache-bust.txt, Template_Proyectos_Dashboard.xlsx
+rem  actualizar.bat  (dashboard-proyectos)
+rem  Flujo:
+rem   1) Detecta Python y usa .venv
+rem   2) Instala deps solo si faltan (pandas, openpyxl)
+rem   3) Git pull --rebase (stash si hay cambios)
+rem   4) Convierte Excel -> JSON con scripts\convert_excel_to_json.py
+rem   5) Escribe cache-bust.txt (timestamp)
+rem   6) Commit + push de TODO el repo
 rem =========================================================
 
-rem 0) Ir a la carpeta del .bat (raíz del repo)
+rem ---------- Config rapida ----------
+set "SCRIPTS_DIR=scripts"
+set "PY_VENV=.venv"
+set "EXCEL_BASE=Template_Proyectos_Dashboard"
+set "PY_CONVERTER=convert_excel_to_json.py"
+set "PUSH_ALL=1"   rem 1 = add -A; 0 = solo data.json + cache-bust + excel
+rem -----------------------------------
+
+rem 0) Ir a la carpeta donde esta este .bat (raiz)
 cd /d "%~dp0"
 
-rem Si por error quedó en /scripts, subir un nivel
-if not exist ".git" (
-  cd ..
+rem Verificar repo git
+git rev-parse --is-inside-work-tree >NUL 2>&1 || (
+  echo [x] No es un repositorio Git. Abre una consola en la carpeta del repo y ejecuta de nuevo.
+  pause
+  exit /b 1
 )
 
-set "EXCEL=Template_Proyectos_Dashboard.xlsx"
-set "JSON=data.json"
-set "VENV=.venv"
+echo.
+echo ==== Dashboard: Actualizacion de datos ====
+echo.
+
+rem 1) Resolver Python (py -3 o python)
 set "PYBIN="
-
-echo.
-echo ==== Dashboard: Actualizacion de datos (segura) ====
-echo.
-
-rem 1) Resolver Python
 where py >nul 2>nul && set "PYBIN=py -3"
+if not defined PYBIN where python >nul 2>nul && set "PYBIN=python"
 if not defined PYBIN (
-  where python >nul 2>nul && set "PYBIN=python"
-)
-if not defined PYBIN (
-  echo [x] No se encontro Python. Instala Python 3.10+ desde https://www.python.org/downloads/
+  echo [x] No se encontro Python 3. Instala desde https://www.python.org/downloads/
   pause
   exit /b 1
 )
 
 rem 2) Crear venv si no existe
-if not exist "%VENV%\Scripts\python.exe" (
+if not exist "%PY_VENV%\Scripts\python.exe" (
   echo [*] Creando entorno virtual...
-  %PYBIN% -m venv "%VENV%"
+  %PYBIN% -m venv "%PY_VENV%"
 )
 
-rem 3) Instalar deps
-echo [*] Instalando dependencias (pandas, openpyxl)...
-"%VENV%\Scripts\python.exe" -m pip install -q --upgrade pip
-"%VENV%\Scripts\python.exe" -m pip install -q pandas openpyxl
-
-rem 4) Traer cambios remotos de forma segura
-echo [*] Trayendo cambios remotos...
-for /f "delims=" %%b in ('git status --porcelain') do set CHANGES=1
-
-set "STASH_NAME="
-if defined CHANGES (
-  echo [i] Hay cambios locales. Guardando temporalmente (stash)...
-  for /f "delims=" %%s in ('git stash push -u -m "auto-stash antes de actualizar"') do (
-    set "STASH_NAME=auto-stash antes de actualizar"
-  )
-)
-
-rem Asegurar estar en main
-for /f %%b in ('git branch --show-current') do set CUR=%%b
-if /I not "%CUR%"=="main" (
-  git fetch origin
-  git checkout main || (echo [x] No se pudo cambiar a branch main & pause & exit /b 1)
-)
-
-git pull --rebase origin main
+echo [*] Verificando dependencias Python...
+"%PY_VENV%\Scripts\python.exe" -c "import pandas,openpyxl" >NUL 2>&1
 if errorlevel 1 (
-  echo [x] Hubo conflictos al hacer pull --rebase. Resuelvelos y vuelve a ejecutar.
-  echo     Sugerencia: git status, corrige conflictos, git add ., git rebase --continue
+  echo [*] Instalando pandas y openpyxl...
+  "%PY_VENV%\Scripts\python.exe" -m pip install -q --disable-pip-version-check --upgrade pip
+  "%PY_VENV%\Scripts\python.exe" -m pip install -q --disable-pip-version-check pandas openpyxl
+)
+
+rem 3) Git: detectar cambios locales y hacer pull --rebase
+echo [*] Sincronizando con remoto...
+
+set "CHANGES="
+for /f "delims=" %%A in ('git status --porcelain') do (
+  set "CHANGES=1"
+  goto :AfterLocalScan
+)
+:AfterLocalScan
+
+if defined CHANGES (
+  echo [i] Hay cambios locales. Guardando en stash temporal...
+  git stash push -u -m "auto-stash antes de actualizar" >NUL
+  set "HAD_STASH=1"
+) else (
+  echo [i] Sin cambios locales antes de actualizar.
+)
+
+rem Detectar rama actual (fallback main)
+set "CURBR="
+for /f %%B in ('git branch --show-current') do set "CURBR=%%B"
+if not defined CURBR set "CURBR=main"
+
+git fetch origin
+git pull --rebase origin %CURBR%
+if errorlevel 1 (
+  echo [x] Conflictos al hacer pull --rebase. Resuelve y reintenta:
+  echo     git status
+  echo     corregir conflictos
+  echo     git add .
+  echo     git rebase --continue
   goto :END
 )
 
-rem Reaplicar el stash si existía
-if defined STASH_NAME (
-  echo [*] Reaplicando cambios locales...
+if defined HAD_STASH (
+  echo [*] Reaplicando cambios locales del stash...
   git stash pop
   if errorlevel 1 (
-    echo [!] El stash al reaplicarse genero conflictos.
-    echo     Revisa "git status", resuelve conflictos y luego ejecuta nuevamente este .bat.
+    echo [!] Hubo conflictos al aplicar el stash. Revisa "git status", resuelvelos y reintenta.
     goto :END
   )
 )
 
+rem 4) Detectar el Excel (autodetecta extension)
+set "EXCEL_PATH="
+for %%E in (xlsx xlsm xls) do (
+  if exist "%EXCEL_BASE%.%%E" (
+    set "EXCEL_PATH=%EXCEL_BASE%.%%E"
+    goto :FoundExcel
+  )
+)
+:FoundExcel
+
+if not defined EXCEL_PATH (
+  echo [x] No se encontro archivo Excel: %EXCEL_BASE%.xlsx (o .xlsm/.xls) en la raiz del repo.
+  pause
+  exit /b 1
+)
+
 rem 5) Ejecutar conversion Excel -> JSON
-echo [*] Convirtiendo "%EXCEL%" a "%JSON%"...
-if not exist "%EXCEL%" (
-  echo [x] No se encontro "%EXCEL%" en la raiz del repo.
+echo [*] Convirtiendo "%EXCEL_PATH%" a JSON con %SCRIPTS_DIR%\%PY_CONVERTER% ...
+if not exist "%SCRIPTS_DIR%\%PY_CONVERTER%" (
+  echo [x] No se encontro el script: %SCRIPTS_DIR%\%PY_CONVERTER%
   pause
   exit /b 1
 )
-
-"%VENV%\Scripts\python.exe" scripts\convert_excel_to_json.py
+"%PY_VENV%\Scripts\python.exe" "%SCRIPTS_DIR%\%PY_CONVERTER%"
 if errorlevel 1 (
-  echo [x] Error en la conversion. Revisa mensajes arriba.
+  echo [x] Error durante la conversion (Python). Revisa mensajes anteriores.
   pause
   exit /b 1
 )
 
-rem 6) Actualizar cache-bust (para forzar refresco en GitHub Pages)
-for /f "tokens=1-4 delims=/:. " %%a in ("%date% %time%") do set "TS=%%a-%%b-%%c_%%d"
+rem 6) cache-bust.txt (timestamp estable)
+for /f %%I in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd-HHmmss"') do set "TS=%%I"
+if not defined TS (
+  for /f "tokens=1-4 delims=/:. " %%a in ("%date% %time%") do set "TS=%%a-%%b-%%c_%%d"
+)
 > cache-bust.txt echo %TS%
 
-rem 7) Commit/push de archivos generados
-echo [*] Publicando cambios generados...
-git add "%JSON%" cache-bust.txt "%EXCEL%" 2>nul
-git commit -m "auto: publish %date% %time%" || echo (sin cambios que commitear)
-git push origin main
+rem 7) Commit + push (todo el repo segun opcion)
+echo [*] Publicando cambios...
+if "%PUSH_ALL%"=="1" (
+  git add -A
+) else (
+  git add data.json cache-bust.txt "%EXCEL_PATH%" 2>NUL
+)
+
+set "HAVECHG="
+for /f %%M in ('git status --porcelain') do (
+  set "HAVECHG=1"
+  goto :DoCommit
+)
+:DoCommit
+
+if defined HAVECHG (
+  git commit -m "auto: publish %TS%" >NUL
+) else (
+  echo (sin cambios para commitear)
+)
+
+rem Asegurar upstream en primer push
+git rev-parse --abbrev-ref --symbolic-full-name @{u} >NUL 2>&1
+if errorlevel 1 (
+  git push -u origin %CURBR%
+) else (
+  git push origin %CURBR%
+)
+if errorlevel 1 (
+  echo [x] Error al hacer push. Revisa credenciales o conflictos.
+  goto :END
+)
 
 echo.
-echo [✓] Listo. En ~30-60s deberias ver los datos nuevos online.
-echo     Si no ves cambios, Ctrl+F5 o limpia cache del navegador.
+echo [OK] Proceso terminado. Si no ves cambios online, fuerza recarga (Ctrl+F5).
 echo.
+
 :END
 pause
