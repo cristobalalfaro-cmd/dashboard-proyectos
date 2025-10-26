@@ -1,10 +1,10 @@
-
 name: Enviar alertas de deadlines
+
 on:
   schedule:
-    # Ejecuta todos los días Lunes a Viernes a las 12:00 UTC (09:00 hora Chile)
+    # Lunes a Viernes 12:00 UTC (≈ 09:00 Chile con DST)
     - cron: "0 12 * * 1-5"
-  workflow_dispatch: {}  # Permite ejecutarlo manualmente desde la pestaña "Actions"
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -12,24 +12,34 @@ permissions:
 jobs:
   alerts:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout del repositorio
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
-      - name: Instalar dependencias necesarias
-        run: npm install xlsx nodemailer dayjs
+      - name: Instalar dependencias (según package.json)
+        run: |
+          npm ci || npm i
 
-      - name: Ejecutar script de alertas
+      # ⬇️ Descomenta si conviertes Excel->JSON en el pipeline
+      # - name: Setup Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.11'
+      # - name: Convertir Excel a JSON
+      #   run: python scripts/convert_excel_to_json.py
+
+      - name: Enviar alertas
         env:
-          SMTP_SERVER:   ${{ secrets.SMTP_SERVER }}
-          SMTP_PORT:     ${{ secrets.SMTP_PORT }}
+          SMTP_SERVER:   ${{ secrets.SMTP_SERVER }}   # p.ej. smtp.gmail.com
+          SMTP_PORT:     ${{ secrets.SMTP_PORT }}     # p.ej. 587
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          ALERT_TO:      ${{ secrets.ALERT_TO }}
-        run: node scripts/alertas.js
+          MAIL_FROM:     ${{ secrets.MAIL_FROM }}     # obligatorio en muchos SMTP
+          ALERT_TO:      ${{ secrets.ALERT_TO }}      # "a@b.com,c@d.com"
+        run: |
+          npm run alertas
