@@ -101,15 +101,20 @@ if defined HAD_STASH (
   )
 )
 
-rem 4) Detectar el Excel (autodetecta extension)
+rem 4) Detectar el Excel (autodetecta extension de forma segura)
 set "EXCEL_PATH="
-for %%E in (xlsx xlsm xls) do (
-  if exist "%EXCEL_BASE%.%%E" (
-    set "EXCEL_PATH=%EXCEL_BASE%.%%E"
-    goto :FoundExcel
-  )
+if exist "%EXCEL_BASE%.xlsx" set "EXCEL_PATH=%EXCEL_BASE%.xlsx"
+if not defined EXCEL_PATH if exist "%EXCEL_BASE%.xlsm" set "EXCEL_PATH=%EXCEL_BASE%.xlsm"
+if not defined EXCEL_PATH if exist "%EXCEL_BASE%.xls"  set "EXCEL_PATH=%EXCEL_BASE%.xls"
+
+if not defined EXCEL_PATH (
+  echo [x] No se encontro ningun archivo Excel que empiece con "%EXCEL_BASE%" en la raiz del repo.
+  echo     Asegurate de que el nombre coincida exactamente, por ejemplo:
+  echo     Template_Proyectos_Dashboard.xlsx
+  pause
+  exit /b 1
 )
-:FoundExcel
+
 
 if not defined EXCEL_PATH (
   echo [x] No se encontro archivo Excel: %EXCEL_BASE%.xlsx (o .xlsm/.xls) en la raiz del repo.
