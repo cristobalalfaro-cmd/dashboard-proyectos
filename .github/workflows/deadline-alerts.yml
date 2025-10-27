@@ -1,8 +1,7 @@
 name: Enviar alertas de deadlines
-
 on:
   schedule:
-    - cron: "0 12 * * 1-5"   # L-V 12:00 UTC (09:00 Chile aprox)
+    - cron: "0 12 * * 1-5"
   workflow_dispatch: {}
 
 permissions:
@@ -21,13 +20,13 @@ jobs:
           node-version: "20"
 
       - name: Install deps
-        run: npm install xlsx nodemailer
+        run: npm install nodemailer dotenv
 
-      - name: Run alerts
+      - name: Run alerts (reads data.json)
         env:
           SMTP_SERVER:   ${{ secrets.SMTP_SERVER }}
           SMTP_PORT:     ${{ secrets.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          ALERT_TO:      ${{ secrets.ALERT_TO }}   # opcional, para pruebas
+          ALERT_TO:      ${{ secrets.ALERT_TO }}
         run: node scripts/alertas.js
