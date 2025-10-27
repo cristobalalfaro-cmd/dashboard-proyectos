@@ -1,28 +1,28 @@
 name: Enviar alertas de deadlines
+
 on:
   schedule:
+    # Ejecuta todos los días lunes a viernes a las 09:00 hora Chile (12:00 UTC)
     - cron: "0 12 * * 1-5"
-  workflow_dispatch: {}
-
-permissions:
-  contents: read
+  workflow_dispatch: {}  # También puede lanzarse manualmente
 
 jobs:
   alerts:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout del repositorio
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Install deps
-        run: npm install nodemailer dotenv
+      - name: Instalar dependencias necesarias
+        run: npm install xlsx nodemailer dayjs dotenv
 
-      - name: Run alerts (reads data.json)
+      - name: Ejecutar script de alertas
         env:
           SMTP_SERVER:   ${{ secrets.SMTP_SERVER }}
           SMTP_PORT:     ${{ secrets.SMTP_PORT }}
