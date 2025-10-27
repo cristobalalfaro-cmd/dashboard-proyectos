@@ -1,0 +1,1100 @@
+[
+  {
+    "cliente": "Sprint/Meli",
+    "proyecto": "Liderazgo 4x4",
+    "tareas": "Propuesta enviada ($4.300.000)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Sprint/Starbuks",
+    "proyecto": "Modelo de Atención",
+    "tareas": "Propuesta enviada ($6.200.000)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Sprint/Construmart",
+    "proyecto": "Construmart - Estudio Cultura",
+    "tareas": "Propuesta ($22.653.200)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Sprint/BioNet",
+    "proyecto": "Pilares de atención",
+    "tareas": "Propuesta enviada",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Check Persons/Komatsu",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Propuesta enviada ($5.700.000)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Xentra/Adium",
+    "proyecto": "Sistemática Comercial laboratorio",
+    "tareas": "Propuesta enviada ($5.700.000)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Xentra/Adium",
+    "proyecto": "Sistemática Comercial oncología",
+    "tareas": "Propuesta enviada ($5.700.000)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Xentra/Entel",
+    "proyecto": "Manual de Instructores",
+    "tareas": "Propuesta enviada",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Meikitisy/Honda",
+    "proyecto": "Mistery Shoper",
+    "tareas": "Propuesta enviada ($5.000.000)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Meikitisy/AcidLabs",
+    "proyecto": "Venta consultiva",
+    "tareas": "Propuesta enviada ($2.527.040)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-15"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "Dashboard",
+    "tareas": "Actualización",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-23"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "Bowler",
+    "tareas": "Actualización",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-23"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Desarrollo contenidos inducción hotelería",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-09-29"
+  },
+  {
+    "cliente": "Sprint/BioNet",
+    "proyecto": "Modelo de atención",
+    "tareas": "Elaboración de propuesta",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-01"
+  },
+  {
+    "cliente": "Cementos Melón",
+    "proyecto": "Sistemática Comercial",
+    "tareas": "Elaboración de propuesta",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-02"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Envío información Data Lake para desarrollo presentaciones a Cristóbal Alfaro",
+    "estatus": "Atrasado",
+    "owner": "Osvaldo Muñoz",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-10"
+  },
+  {
+    "cliente": "Cromtek",
+    "proyecto": "Sistemática Comercial",
+    "tareas": "Reunión de validación estrategia bajada a equipos",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-03"
+  },
+  {
+    "cliente": "Cromtek",
+    "proyecto": "Sistemática Comercial",
+    "tareas": "Validación manual",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-03"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "Dashboard",
+    "tareas": "Revisión cuenta Power BI otorgada por la empresa",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Validar el concept art",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollo caso 1",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollar evaluación módulo 1",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Sprint/BioNet",
+    "proyecto": "Modelo de atención",
+    "tareas": "Propuesta financiera",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-06"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Desarrollo contenidos Cultura de Servicio",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-06"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Desarrollo contenidos Habilitación Colaboradores",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-06"
+  },
+  {
+    "cliente": "Cromtek",
+    "proyecto": "Sistemática Comercial",
+    "tareas": "Diseño de formación",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-10"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Manual Instructores",
+    "tareas": "Validación de contenidos",
+    "estatus": "Esperando respuesta cliente",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-10"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollo caso 2",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollar evaluación módulo 2",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Validación contenidos Kick Off",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-10"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Desarrollo PPT Kick off General (Presentación Gerencia)",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-02"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Licitación modelo gestión instructores",
+    "tareas": "Elaboración de propuesta",
+    "estatus": "Finalizado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-07"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Diseño Gráfico Kick Off General y Kick off para los Champions",
+    "estatus": "Finalizado",
+    "owner": "Jorge García (Sprint)",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-13"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Desarrollo contenidos Rol de Aux. Aseo / Mucama",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-13"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Revisión de contenidos",
+    "estatus": "Finalizado",
+    "owner": "Encargados de Hotel",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-06"
+  },
+  {
+    "cliente": "Cromtek",
+    "proyecto": "Sistemática Comercial",
+    "tareas": "Ejecución de formación",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Manual Instructores",
+    "tareas": "Arreglos gráficos",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Manual Instructores",
+    "tareas": "Entrega final",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollo caso 3",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollar evaluación módulo 3",
+    "estatus": "Iniciado",
+    "owner": "Rafael Vega",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Desarrollo PPT Kick off Champions",
+    "estatus": "Iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-02"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Construcción versión final (mas resumida, no tan extensa, más práctica)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-13"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Validación contenidos + agregar info propia de cada hotel por parte de los Encargados de Personas de cada Hotel",
+    "estatus": "No iniciado",
+    "owner": "Encargados de Hotel",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Cromtek",
+    "proyecto": "Sistemática Comercial",
+    "tareas": "Entrega de informe",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-24"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollar mapa",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-24"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Diseño gráfico presentacion inducción completa (todos los módulos)",
+    "estatus": "Finalizado",
+    "owner": "Jorge García (Sprint)",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-13"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Preparación versión final PPT, manuales y evaluaciones",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-05"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Validación PPT Kick off cultura Data Driven",
+    "estatus": "No iniciado",
+    "owner": "Osvaldo Muñoz",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-02"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Diseño del modelo de organización por área: manual del rol champions",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-31"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Diseño formación sesiones embajadores RRHH y Logística",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-31"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Diseño formación sesiones áreas de RRHH y Logística",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-31"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Formación de Embajadores RRHH y Logística: Modelo de Datos",
+    "estatus": "No iniciado",
+    "owner": "Marcela Suarez",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Reunión de traspaso (habilitación) presentaciones a Encargados de Personas de cada Hotel",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollo objeto E-learning 1 módulo",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-07"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Formación de Embajadores RRHH y Logística: Entrenamiento y certificación de sus equipos",
+    "estatus": "No iniciado",
+    "owner": "Marcela Suarez",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Reunión Kick Off Champions",
+    "estatus": "No iniciado",
+    "owner": "Marcela Suarez",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-04"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Piloto nuevo modelo inducción (foco mucamas)",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Kick Off Nuevo proceso de Inducción + Piloto Coaching rol de Aux Aseo.",
+    "estatus": "No iniciado",
+    "owner": "Daniela Romo",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-05"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollo objeto E-learning 2 módulo",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-14"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Desarrollo objeto E-learning 3 módulo",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-21"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "E-Learning CST",
+    "tareas": "Lanzamiento",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-28"
+  },
+  {
+    "cliente": "Imiflex",
+    "proyecto": "Comercial",
+    "tareas": "Seguimiento reunión de presentación ($2.700.000 / $6.300.000)",
+    "estatus": "Iniciado atrasado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-13"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Reunión Kick off cultura Data-Driven",
+    "estatus": "No iniciado",
+    "owner": "Marcela Suarez",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-07"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Capacitación áreas RRHH y Logística: Sensibilización + introducción al modelo, propósito, expectativas.",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake",
+    "tareas": "Entrenamiento áreas de RRHH y Logística: Uso de Datos (desarrollo de skills técnicas iniciales)",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Estudio / alineamiento modelo de datos área Comercial",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Diseño formación sesiones embajadores área Comercial",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Diseño formación sesiones equipos área Comercial",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Formación de Embajadores área Comercial: Modelo de Datos",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Validación contenidos Rol de Aux. Aseo / Mucama (con jefes del área)",
+    "estatus": "No iniciado",
+    "owner": "Encargados de Hotel",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-27"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Formación de Embajadores área Comercial: Entrenamiento y certificación de sus equipos",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Capacitación área Comercial: Sensibilización + introducción al modelo, propósito, expectativas.",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Ópticas Schilling",
+    "proyecto": "Data Lake (Traspaso a Consultor Sprint)",
+    "tareas": "Entrenamiento área Comercial: Uso de Datos (desarrollo de skills técnicas iniciales)",
+    "estatus": "No iniciado",
+    "owner": "Juan Cristóbal",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Reunión 14 de Octubre (Levantamiento)",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-14"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Licitación modelo gestión instructores",
+    "tareas": "Seguimiento propuesta",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Meikitisy/Honda",
+    "proyecto": "Mistery Shoper",
+    "tareas": "Seguimiento",
+    "estatus": "Iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Sprint/Construmart",
+    "proyecto": "Construmart - Estudio Cultura",
+    "tareas": "Presentación propuesta",
+    "estatus": "Iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Smart Mining",
+    "proyecto": "Headhunting Full Stack",
+    "tareas": "Reclutamiento",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-14"
+  },
+  {
+    "cliente": "Smart Mining",
+    "proyecto": "Headhunting Full Stack",
+    "tareas": "Entrevistas",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Smart Mining",
+    "proyecto": "Headhunting Full Stack",
+    "tareas": "Envío de candidatos",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Smart Mining",
+    "proyecto": "Headhunting Full Stack",
+    "tareas": "Entrevistas con cliente",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-27"
+  },
+  {
+    "cliente": "Smart Mining",
+    "proyecto": "Headhunting Full Stack",
+    "tareas": "Evaluación psicolaboral",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-30"
+  },
+  {
+    "cliente": "Smart Mining",
+    "proyecto": "Headhunting Full Stack",
+    "tareas": "Cierre y facturación",
+    "estatus": "No iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-11-14"
+  },
+  {
+    "cliente": "Nobel Biocare",
+    "proyecto": "Informe Proyectos 2025 Xentra",
+    "tareas": "Armar Informe",
+    "estatus": "Iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-17"
+  },
+  {
+    "cliente": "Promet",
+    "proyecto": "Onboarding",
+    "tareas": "Reunión de levantamiento sugerencias nuevos entregables",
+    "estatus": "No iniciado",
+    "owner": "Daniela Romo",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "eContact",
+    "proyecto": "Modelo Comercial",
+    "tareas": "Armar presentación visual",
+    "estatus": "Finalizado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-16"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Armar Gantt y validar",
+    "estatus": "Finalizado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-15"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Licitación Modelo Instructores",
+    "tareas": "Armar presentación según lineamientos",
+    "estatus": "No iniciado",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-15"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrega de documentación (descriptor cargo, perfil, etc) a consultores",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Kick Off con Luis y Jaime",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-24"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Reunión entendimiento del rol (Luis)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-27"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Reunión entendimiento del rol (Jaime)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-27"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Reunión definición expectativas con Jefe directo",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-10-27"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista definición \"Macro Proceso\" (Luis)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-03"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista definición \"Macro Proceso\" (Jaime)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-03"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 1 (Luis)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 1 (Jaime)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 2 (Luis)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 2 (Jaime)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-10"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 3 (Luis)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 3 (Jaime)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 4 (Luis)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Entrevista apertura etapa 4 (Jaime)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-17"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Focus Group 1: Cliente interno: Área Ventas",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Focus Group 2: Cliente interno: Áreas técnica",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Acompañamiento online/presencial a reuniones guiadas por Luis",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Acompañamiento online/presencial a reuniones guiadas por Jaime",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-11-24"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Construcción matriz de conocimiento experto (x2)",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2025-12-01"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Validación matriz con Luis",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-05"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Validación matriz con Jaime",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-05"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Validación ambas matrices con jefatura",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-05"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Ajustes matriz de conocimiento Luis",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-19"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Ajustes matriz de conocimiento Jaime",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-19"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Validación matriz final Luis",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-26"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Validación matriz final Jaime",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-26"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Validación ambas matrices finales con jefatura",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-01-26"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Ajustes y entrega final matriz Luis",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-02-02"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Ajustes y entrega final matriz Jaime",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-02-02"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Traspaso Matriz a desarrollo Audiovisual",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-02-09"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Legacy x2 ( Luis + Jaime)",
+    "tareas": "Lanzamiento",
+    "estatus": "On hold",
+    "owner": "Cristóbal Alfaro",
+    "email": "cristobal.alfaro.s@outlook.com",
+    "deadline": "2026-06-01"
+  },
+  {
+    "cliente": "eContact",
+    "proyecto": "Modelo Comercial",
+    "tareas": "Agendar reunión de presentación de propuesta",
+    "estatus": "Iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-20"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Licitación modelo gestión instructores",
+    "tareas": "Armar propuesta Técnica",
+    "estatus": "Finalizado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-21"
+  }
+]
