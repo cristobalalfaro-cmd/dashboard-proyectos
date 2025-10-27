@@ -38,9 +38,9 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git status
-          # Fuerza la inclusión aunque estén en .gitignore
+          # Forzar inclusión de archivos ignorados
           git add -f data.json cache-bust.txt
           git commit -m "auto: actualizar datos desde Excel" || echo "Sin cambios que commitear"
           git push
+
 
