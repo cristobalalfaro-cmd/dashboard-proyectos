@@ -2,22 +2,18 @@ name: Build data from Excel
 
 on:
   push:
-    branches: [ main ]          # 🚩 corre en cualquier push (README, etc.)
-    # si quieres que también corra en master, añade:  - master
-  workflow_dispatch: {}          # 🚩 botón "Run workflow" en Actions
-  # (opcional) corre cada X tiempo:
-  # schedule:
-  #   - cron: "*/30 * * * *"     # cada 30 min
+    branches: [ main ]
+  workflow_dispatch: {}
 
 permissions:
   contents: write
 
 jobs:
   build:
-    # Evita loop por su propio commit y evita ejecutar si el Excel fue borrado
+    # evita loop por su propio commit y no falla si el Excel fue borrado
     if: >
       ${{
-        github.event.head_commit.message != 'auto: actualizar datos desde Excel' &&
+        github.event_head_commit.message != 'auto: actualizar datos desde Excel' &&
         !contains(join(github.event.head_commit.removed, ','), 'Template_Proyectos_Dashboard.xlsx')
       }}
     runs-on: ubuntu-latest
@@ -30,8 +26,10 @@ jobs:
 
       - name: Ensure Excel exists (skip gracefully)
         run: |
+          echo "Contenido de la raíz:"
+          ls -la
           if [ ! -f "Template_Proyectos_Dashboard.xlsx" ]; then
-            echo "Excel no encontrado; nada que convertir. Saliendo sin error."
+            echo "⚠️  Excel no encontrado en la raíz; salgo sin error."
             exit 0
           fi
 
@@ -45,17 +43,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pandas openpyxl
 
-      - name: Show Excel info (debug)
-        run: |
-          git rev-parse --short HEAD
-          ls -la
-          sha256sum Template_Proyectos_Dashboard.xlsx || true
-          
-      - name: Debug - Ver archivos en raíz
-        run: |
-          echo "Archivos en el workspace actual:"
-          ls -la
-
       - name: Convert Excel -> JSON
         run: python scripts/convert_excel_to_json.py
 
@@ -67,7 +54,6 @@ jobs:
           git config --global user.name  "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          # forzar inclusión aunque estén en .gitignore
           git add -f data.json cache-bust.txt
           git commit -m "auto: actualizar datos desde Excel" || echo "Sin cambios que commitear"
           git push
