@@ -1,12 +1,11 @@
-// Envío de recordatorios agrupando por (OwnerEmail, Proyecto)
+// Envío de recordatorios leyendo data.json (generado por build-data.yml)
 try { require('dotenv').config(); } catch (_) {}
 
 const fs = require('fs');
 const path = require('path');
-const XLSX = require('xlsx');
 const nodemailer = require('nodemailer');
 
-const EXCEL = path.resolve(__dirname, '..', 'Template_Proyectos_Dashboard.xlsx');
+const DATA_JSON = path.resolve(__dirname, '..', 'data.json');
 const DASH_BASE = 'https://cristobalalfaro-cmd.github.io/dashboard-proyectos/';
 
 const {
@@ -14,93 +13,50 @@ const {
   SMTP_PORT,
   SMTP_USERNAME,
   SMTP_PASSWORD,
-  MAIL_FROM,      // ★ remitente configurable
   ALERT_TO,
-  ONLY_EMAIL,     // pruebas: enviar sólo a este correo
-  ONLY_PROJECT    // pruebas: filtrar por nombre de proyecto
+  ONLY_EMAIL,   // pruebas: enviar sólo a este correo
+  ONLY_PROJECT  // pruebas: filtrar por nombre de proyecto
 } = process.env;
 
 const DRY = process.argv.includes('--dry-run');
 
-function norm(s) { return (s ?? '').toString().trim(); }
-function nkey(s) { return norm(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
-
-// ★ conversor seguro de fecha (num serial Excel | Date | string YYYY-MM-DD)
-function excelSerialToDate(n) {
-  // Excel serial day → JS Date (epoch 1899-12-30, cuidando el bug del 1900)
-  const epoch = new Date(Date.UTC(1899, 11, 30));
-  const ms = Math.round((Number(n) || 0) * 86400000);
-  const d = new Date(epoch.getTime() + ms);
-  // dejar a medianoche “local lógica” (sin horas) para comparaciones por día
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-function toDate(v) {
+function norm(s){ return (s ?? '').toString().trim(); }
+function nkey(s){ return norm(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+function toDate(v){
   if (!v) return null;
-  if (v instanceof Date && !isNaN(v)) {
-    return new Date(v.getFullYear(), v.getMonth(), v.getDate());
-  }
-  if (typeof v === 'number') {
-    return excelSerialToDate(v);
-  }
-  if (typeof v === 'string') {
-    // Aceptar formatos “YYYY-MM-DD” o parecidos
-    const parsed = new Date(v);
-    if (!isNaN(parsed)) {
-      return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
-    }
-  }
-  return null;
+  const d = new Date(v);
+  return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
-
-function isDone(s) {
+function isDone(s){
   const t = nkey(s);
-  return ['finalizado', 'finalizada', 'cerrado', 'completado', 'completada'].includes(t);
+  return ['finalizado','finalizada','cerrado','completado','completada'].includes(t);
 }
 
-function readExcel() {
-  if (!fs.existsSync(EXCEL)) throw new Error('No se encontró el Excel en: ' + EXCEL);
-  // ★ celldates:true → fechas reales; raw:false → parsea valores
-  const wb = XLSX.readFile(EXCEL, { cellDates: true });
-  const sheet = wb.SheetNames.includes('Tareas')
-    ? 'Tareas'
-    : (wb.SheetNames.includes('Proyectos') ? 'Proyectos' : wb.SheetNames[0]);
+function readDataJson(){
+  if (!fs.existsSync(DATA_JSON)) {
+    throw new Error('No existe data.json. Asegúrate de que la Action "Build data.json" haya corrido.');
+  }
+  const raw = JSON.parse(fs.readFileSync(DATA_JSON, 'utf8'));
 
-  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheet], {
-    defval: '',
-    raw: false,        // ★ permite que XLSX intente interpretar fechas/num
-    dateNF: 'yyyy-mm-dd' // ★ formateo de fechas
-  });
-
-  const map = {
-    cliente: ['Cliente', 'Account', 'Empresa'],
-    proyecto: ['Proyecto', 'Project', 'Nombre Proyecto'],
-    tareas: ['Tareas', 'Tarea', 'Actividad', 'Nombre Tarea', 'Task', 'Actividad/Tarea'],
-    estatus: ['Estatus', 'Estado', 'Status'],
-    deadline: ['Deadline', 'Fecha Limite', 'Fecha Límite', 'Vencimiento', 'Due Date'],
-    owner: ['Owner', 'Responsable', 'Asignado', 'Ejecutor'],
-    email: ['Correo', 'Email', 'Owner Email', 'Mail', 'e-mail', 'Correo Owner'],
-  };
-  function pick(r, keys) { for (const k of keys) { if (k in r) return r[k]; } return ''; }
-
-  return rows.map(r => ({
-    cliente: norm(pick(r, map.cliente)),
-    proyecto: norm(pick(r, map.proyecto)),
-    tareas: norm(pick(r, map.tareas)),
-    estatus: norm(pick(r, map.estatus)),
-    owner: norm(pick(r, map.owner)),
-    email: norm(pick(r, map.email)),
-    deadline: toDate(pick(r, map.deadline))
+  // Adapta a tu estructura exacta de data.json si fuera distinto
+  // Suponemos un array de filas con estas llaves estándar:
+  // { cliente, proyecto, tareas, estatus, owner, email, deadline }
+  return raw.map(r => ({
+    cliente: norm(r.cliente ?? r.Cliente ?? r.Account ?? ''),
+    proyecto: norm(r.proyecto ?? r.Proyecto ?? r.Project ?? ''),
+    tareas:   norm(r.tareas   ?? r.Tareas   ?? r.Tarea   ?? r.Actividad ?? ''),
+    estatus:  norm(r.estatus  ?? r.Estatus  ?? r.Estado  ?? r.Status    ?? ''),
+    owner:    norm(r.owner    ?? r.Owner    ?? r.Responsable ?? ''),
+    email:    norm((r.email   ?? r.Correo   ?? r.Email   ?? r['Owner Email'] ?? '').toLowerCase()),
+    deadline: toDate(r.deadline ?? r.Deadline ?? r['Fecha Limite'] ?? r['Fecha Límite'] ?? r['Due Date'] ?? '')
   }));
 }
 
-function splitTasks(rows) {
-  // ★ “hoy” a medianoche local del runner; comparamos por días enteros
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const FIVE = 5 * 86400000;
-
-  const vencidas = [], proximas = [];
-  for (const r of rows) {
+function splitTasks(rows){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const FIVE = 5*86400000;
+  const vencidas=[], proximas=[];
+  for (const r of rows){
     if (isDone(r.estatus)) continue;
     if (!r.deadline) continue;
     const ts = r.deadline.getTime();
@@ -110,14 +66,16 @@ function splitTasks(rows) {
   return { vencidas, proximas };
 }
 
-function groupByEmailProject(rows) {
+function groupByEmailProject(rows){
   const map = new Map();
-  for (const r of rows) {
-    const email = (r.email || '').toLowerCase();
+  for (const r of rows){
+    const email = (r.email||'').toLowerCase();
     if (!email) continue;
     if (ONLY_EMAIL && email !== ONLY_EMAIL.toLowerCase()) continue;
+
     const proj = r.proyecto || '(sin proyecto)';
     if (ONLY_PROJECT && proj !== ONLY_PROJECT) continue;
+
     const key = email + '|||' + proj;
     if (!map.has(key)) map.set(key, []);
     map.get(key).push(r);
@@ -125,9 +83,9 @@ function groupByEmailProject(rows) {
   return map;
 }
 
-function fmtDate(d) { if (!d) return ''; return d.toLocaleDateString('es-CL'); }
+function fmtDate(d){ return d ? d.toLocaleDateString('es-CL') : ''; }
 
-function renderTable(title, rows) {
+function renderTable(title, rows){
   if (!rows.length) return '';
   const head = `
     <h3 style="margin:16px 0 8px 0">${title}</h3>
@@ -142,20 +100,20 @@ function renderTable(title, rows) {
           <th align="left">Deadline</th>
         </tr>
       </thead><tbody>`;
-  const body = rows.map(r => `
+  const body = rows.map(r=>`
     <tr style="border-bottom:1px solid #eee">
-      <td>${r.cliente || ''}</td>
-      <td>${r.proyecto || ''}</td>
-      <td>${r.tareas || ''}</td>
-      <td>${r.estatus || ''}</td>
-      <td>${r.owner || ''}</td>
-      <td>${fmtDate(r.deadline) || ''}</td>
+      <td>${r.cliente||''}</td>
+      <td>${r.proyecto||''}</td>
+      <td>${r.tareas||''}</td>
+      <td>${r.estatus||''}</td>
+      <td>${r.owner||''}</td>
+      <td>${fmtDate(r.deadline)||''}</td>
     </tr>`).join('');
   return head + body + '</tbody></table>';
 }
 
-function emailHTML({ cliente, proyecto, vencidas, proximas }) {
-  const dash = `${DASH_BASE}?cliente=${encodeURIComponent(cliente || '')}`;
+function emailHTML({cliente, proyecto, vencidas, proximas}){
+  const dash = `${DASH_BASE}?cliente=${encodeURIComponent(cliente||'')}`;
   const intro = `
     <p style="margin:0 0 12px 0">
       Hola! éste es un recordatorio generado automáticamente para que aseguremos el avance del proyecto de acuerdo a la planificación acordada.
@@ -172,78 +130,61 @@ function emailHTML({ cliente, proyecto, vencidas, proximas }) {
     ${btn}`;
   html += renderTable("Tareas vencidas", vencidas);
   html += renderTable("Tareas próximas a vencer (≤ 5 días)", proximas);
-  if (!vencidas.length && !proximas.length) {
+  if (!vencidas.length && !proximas.length){
     html += `<p>No hay tareas vencidas ni próximas a vencer.</p>`;
   }
   html += `</div>`;
   return html;
 }
 
-async function makeTransport() {
-  if (DRY) {
-    return {
-      sendMail: async (o) => {
-        console.log("\n--- DRY RUN ---");
-        console.log("FROM:", o.from);
-        console.log("TO:", o.to);
-        console.log("SUBJECT:", o.subject);
-        return { messageId: "(dry)" };
-      }
-    };
+async function transport(){
+  if (DRY){
+    return { sendMail: async (o)=>{
+      console.log("\n--- DRY RUN ---");
+      console.log("TO:", o.to);
+      console.log("SUBJECT:", o.subject);
+      return { messageId:"(dry)" };
+    }};
   }
-  if (!SMTP_SERVER || !SMTP_PORT || !SMTP_USERNAME || !SMTP_PASSWORD) {
+  if(!SMTP_SERVER || !SMTP_PORT || !SMTP_USERNAME || !SMTP_PASSWORD){
     throw new Error("Faltan variables SMTP_* en el entorno.");
   }
-  return nodemailer.createTransport({
+  return require('nodemailer').createTransport({
     host: SMTP_SERVER,
     port: Number(SMTP_PORT),
-    secure: Number(SMTP_PORT) === 465,
+    secure: Number(SMTP_PORT)===465,
     auth: { user: SMTP_USERNAME, pass: SMTP_PASSWORD },
   });
 }
 
-(async function main() {
-  try {
-    // Validaciones básicas
-    if (!MAIL_FROM) {
-      console.warn('⚠ MAIL_FROM no está definido. Se usará SMTP_USERNAME como remitente.');
-    }
-
-    const all = readExcel();
+(async function main(){
+  try{
+    const all = readDataJson();
     const groups = groupByEmailProject(all);
-    const t = await makeTransport();
-    let sent = 0;
+    const t = await transport();
+    let sent=0;
 
-    for (const [key, rows] of groups.entries()) {
-      const [email, proyecto] = key.split("|||");
+    for (const [key, rows] of groups.entries()){
+      const [email, proyecto] = key.split('|||');
       const { vencidas, proximas } = splitTasks(rows);
       if (!vencidas.length && !proximas.length) continue;
 
-      // cliente dominante para el link
-      const byC = {};
-      rows.forEach(r => { const c = r.cliente || ''; byC[c] = (byC[c] || 0) + 1; });
-      const cliente = Object.entries(byC).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+      // cliente predominante para el link
+      const byC = {}; rows.forEach(r=>{ const c=r.cliente||''; byC[c]=(byC[c]||0)+1; });
+      const cliente = Object.entries(byC).sort((a,b)=>b[1]-a[1])[0]?.[0] || '';
 
-      // ★ ALERT_TO soporta múltiple (a,b,c). Si no hay, usa el email del owner
-      const to = (ALERT_TO && ALERT_TO.split(',').map(s => s.trim()).filter(Boolean).join(',')) || email;
-
+      const to = ALERT_TO || email;
       const subject = `Proyecto ${proyecto}: Tienes tareas asignadas vencidas o próximas a vencer`;
       const html = emailHTML({ cliente, proyecto, vencidas, proximas });
 
       const info = await t.sendMail({
-        from: `"PMO Cristóbal Alfaro" <${MAIL_FROM || SMTP_USERNAME}>`, // ★ usa MAIL_FROM si existe
-        to,
-        subject,
-        // text “limpio” por si el servidor prefiere plain text
-        text: `Proyecto ${proyecto}\nVencidas: ${vencidas.length}\nPróximas (≤5 días): ${proximas.length}\n`,
-        html
+        from: `"PMO Cristóbal Alfaro" <${SMTP_USERNAME}>`,
+        to, subject, html
       });
-      sent++;
-      console.log(`✔ Enviado a ${to} (proyecto=${proyecto}) id=${info.messageId}`);
+      sent++; console.log(`✔ Enviado a ${to} (proyecto=${proyecto}) id=${info.messageId}`);
     }
-
-    if (sent === 0) console.log("No había tareas para alertar.");
-  } catch (err) {
+    if (sent===0) console.log("No había tareas para alertar.");
+  }catch(err){
     console.error("✖ Error enviando alertas:", err);
     process.exit(1);
   }
