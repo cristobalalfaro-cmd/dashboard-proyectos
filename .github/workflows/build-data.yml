@@ -2,21 +2,19 @@ name: Build data from Excel
 
 on:
   push:
-    # Dispara cuando cambias el Excel (o el conversor, si quieres)
-    branches:
-      - main
-      - master
-    paths:
-      - "Template_Proyectos_Dashboard.xlsx"
-      - "scripts/convert_excel_to_json.py"
-  workflow_dispatch: {}   # Permite correrlo manualmente desde Actions
+    branches: [ main ]          # 🚩 corre en cualquier push (README, etc.)
+    # si quieres que también corra en master, añade:  - master
+  workflow_dispatch: {}          # 🚩 botón "Run workflow" en Actions
+  # (opcional) corre cada X tiempo:
+  # schedule:
+  #   - cron: "*/30 * * * *"     # cada 30 min
 
 permissions:
-  contents: write   # necesario para hacer commit/push
+  contents: write
 
 jobs:
   build:
-    # Evita correr si el Excel fue borrado y evita loop con su propio commit
+    # Evita loop por su propio commit y evita ejecutar si el Excel fue borrado
     if: >
       ${{
         github.event.head_commit.message != 'auto: actualizar datos desde Excel' &&
@@ -28,7 +26,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # imprescindible si luego se hace push
+          fetch-depth: 0
+
+      - name: Ensure Excel exists (skip gracefully)
+        run: |
+          if [ ! -f "Template_Proyectos_Dashboard.xlsx" ]; then
+            echo "Excel no encontrado; nada que convertir. Saliendo sin error."
+            exit 0
+          fi
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -40,12 +45,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pandas openpyxl
 
-      # (Opcional) Debug: ver que el Excel realmente está en este commit
-      - name: Show Excel presence
+      - name: Show Excel info (debug)
         run: |
-          ls -la
           git rev-parse --short HEAD
-          sha256sum Template_Proyectos_Dashboard.xlsx || echo "Excel no encontrado"
+          ls -la
+          sha256sum Template_Proyectos_Dashboard.xlsx || true
 
       - name: Convert Excel -> JSON
         run: python scripts/convert_excel_to_json.py
@@ -58,8 +62,7 @@ jobs:
           git config --global user.name  "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          # Fuerza añadir aunque estén en .gitignore
+          # forzar inclusión aunque estén en .gitignore
           git add -f data.json cache-bust.txt
           git commit -m "auto: actualizar datos desde Excel" || echo "Sin cambios que commitear"
           git push
-
