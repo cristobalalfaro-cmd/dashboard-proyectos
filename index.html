@@ -96,19 +96,14 @@
   </div>
 
 <script>
-(async function(){
-  // === Carga de datos ===
-  const res = await fetch("data.json?cb="+Date.now());
-  const rows = await res.json();
-  const settings = await fetch("settings.json").then(r=>r.json());
-  document.getElementById("title").textContent = settings.dashboardTitle || "Dashboard de Proyectos";
 async function loadData() {
   let cb = Date.now();
   try {
-    const r = await fetch('cache-bust.txt');
+    const r = await fetch('cache-bust.txt', { cache: 'no-store' });
     if (r.ok) cb = (await r.text()).trim();
   } catch (e) {}
-  const data = await fetch('data.json?cb=' + encodeURIComponent(cb)).then(r => r.json());
+  const data = await fetch('data.json?cb=' + encodeURIComponent(cb), { cache: 'no-store' })
+                  .then(r => r.json());
   initDashboard(data);
 }
 loadData();
