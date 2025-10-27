@@ -50,6 +50,11 @@ jobs:
           git rev-parse --short HEAD
           ls -la
           sha256sum Template_Proyectos_Dashboard.xlsx || true
+          
+      - name: Debug - Ver archivos en raíz
+        run: |
+          echo "Archivos en el workspace actual:"
+          ls -la
 
       - name: Convert Excel -> JSON
         run: python scripts/convert_excel_to_json.py
