@@ -2,19 +2,23 @@ name: Build data from Excel
 
 on:
   push:
-    branches: [ main ]
+    # Dispara cuando cambias el Excel (o el conversor, si quieres)
+    branches:
+      - main
+      - master
     paths:
       - "Template_Proyectos_Dashboard.xlsx"
-  workflow_dispatch: {}
+      - "scripts/convert_excel_to_json.py"
+  workflow_dispatch: {}   # Permite correrlo manualmente desde Actions
 
 permissions:
-  contents: write
+  contents: write   # necesario para hacer commit/push
 
 jobs:
   build:
+    # Evita correr si el Excel fue borrado y evita loop con su propio commit
     if: >
       ${{
-        github.event_name != 'workflow_run' &&
         github.event.head_commit.message != 'auto: actualizar datos desde Excel' &&
         !contains(join(github.event.head_commit.removed, ','), 'Template_Proyectos_Dashboard.xlsx')
       }}
@@ -24,46 +28,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # imprescindible si luego se hace push
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
           python -m pip install pandas openpyxl
 
-      - name: Show Excel info
+      # (Opcional) Debug: ver que el Excel realmente está en este commit
+      - name: Show Excel presence
         run: |
           ls -la
-          echo "Git HEAD: $(git rev-parse --short HEAD)"
+          git rev-parse --short HEAD
           sha256sum Template_Proyectos_Dashboard.xlsx || echo "Excel no encontrado"
 
-      - name: Run converter
-        run: |
-          python scripts/convert_excel_to_json.py
-
-      - name: Debug data.json (preview & counts)
-        run: |
-          python - <<'PY'
-          import json, pathlib
-          p = pathlib.Path('data.json')
-          if not p.exists():
-              raise SystemExit("data.json no existe tras la conversion")
-          data = json.loads(p.read_text(encoding='utf-8'))
-          print("[debug] filas:", len(data))
-          print("[debug] primeras 2 filas:", data[:2])
-          PY
-
-      - name: Diff vs previous commit
-        run: |
-          git status
-          # Ver qué cambió realmente
-          git diff --name-only
-          git diff -- data.json | sed -n '1,200p' || true
+      - name: Convert Excel -> JSON
+        run: python scripts/convert_excel_to_json.py
 
       - name: Update cache-bust.txt
         run: echo "$(date -u +%Y%m%d-%H%M%S)" > cache-bust.txt
@@ -73,7 +58,8 @@ jobs:
           git config --global user.name  "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          # Forzar inclusion aunque esten en .gitignore
+          # Fuerza añadir aunque estén en .gitignore
           git add -f data.json cache-bust.txt
           git commit -m "auto: actualizar datos desde Excel" || echo "Sin cambios que commitear"
           git push
+
