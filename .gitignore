@@ -1,16 +1,16 @@
-# Entornos locales
+# entornos/temporales locales
 .venv/
 node_modules/
 __pycache__/
 *.pyc
-
-# Archivos generados automáticamente
-data.json
-cache-bust.txt
-
-# Archivos temporales o del sistema
-.DS_Store
-Thumbs.db
 logs/
 tmp/
 *.log
+
+# generados por Actions (no queremos subirlos desde tu PC)
+data.json
+cache-bust.txt
+
+# archivos del sistema
+.DS_Store
+Thumbs.db
