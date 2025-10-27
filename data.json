@@ -1096,5 +1096,14 @@
     "owner": "Loreto Naranjo",
     "email": "loreto.naranjo@gmail.com",
     "deadline": "2025-10-21"
+  },
+  {
+    "cliente": "Komatsu-Cummins",
+    "proyecto": "Prueba Actualizacion",
+    "tareas": "Prueba Actualizacion",
+    "estatus": "Iniciado",
+    "owner": "Loreto Naranjo",
+    "email": "loreto.naranjo@gmail.com",
+    "deadline": "2025-10-21"
   }
 ]
