@@ -1,46 +1,50 @@
 name: Build data from Excel
 
-name: Build data from Excel
-
 on:
   push:
     branches:
       - main
     paths:
       - "Template_Proyectos_Dashboard.xlsx"
-  workflow_dispatch: {}  # Permite lanzarlo manualmente desde Actions
+  workflow_dispatch: {}
+
+# Necesario para poder commitear/pushear desde el runner
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout del repositorio
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # necesario si vamos a hacer push
 
-      - name: Instalar Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Instalar dependencias
+      - name: Install deps
         run: |
+          pip install --upgrade pip
           pip install pandas openpyxl
 
-      - name: Convertir Excel a JSON
+      - name: Convert Excel -> JSON
         run: |
           python scripts/convert_excel_to_json.py
 
-      - name: Actualizar cache-bust.txt
+      - name: Update cache-bust.txt
         run: echo "$(date +'%Y-%m-%d_%H-%M-%S')" > cache-bust.txt
 
-      - name: Commit y push automáticos
+      - name: Commit and push data.json + cache-bust.txt
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          # Forzar inclusión de archivos ignorados
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          # forzar inclusión aunque estén en .gitignore
           git add -f data.json cache-bust.txt
           git commit -m "auto: actualizar datos desde Excel" || echo "Sin cambios que commitear"
           git push
-
 
