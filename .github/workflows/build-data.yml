@@ -2,25 +2,30 @@ name: Build data from Excel
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
     paths:
       - "Template_Proyectos_Dashboard.xlsx"
   workflow_dispatch: {}
 
-# Necesario para poder commitear/pushear desde el runner
 permissions:
   contents: write
 
 jobs:
   build:
-    if: ${{ github.event_name != 'workflow_run' && github.event.head_commit.message != 'auto: actualizar datos desde Excel' }}
+    # 1) No te auto-dispares por tu propio commit
+    # 2) No corras si el Excel fue borrado (solo si se agregó o modificó)
+    if: >
+      ${{
+        github.event_name != 'workflow_run' &&
+        github.event.head_commit.message != 'auto: actualizar datos desde Excel' &&
+        !contains(join(github.event.head_commit.removed, ','), 'Template_Proyectos_Dashboard.xlsx')
+      }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0        # necesario si vamos a hacer push
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -29,12 +34,11 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install --upgrade pip
-          pip install pandas openpyxl
+          python -m pip install --upgrade pip
+          python -m pip install pandas openpyxl
 
       - name: Convert Excel -> JSON
-        run: |
-          python scripts/convert_excel_to_json.py
+        run: python scripts/convert_excel_to_json.py
 
       - name: Update cache-bust.txt
         run: echo "$(date +'%Y-%m-%d_%H-%M-%S')" > cache-bust.txt
@@ -44,8 +48,6 @@ jobs:
           git config --global user.name  "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          # forzar inclusión aunque estén en .gitignore
           git add -f data.json cache-bust.txt
           git commit -m "auto: actualizar datos desde Excel" || echo "Sin cambios que commitear"
           git push
-
