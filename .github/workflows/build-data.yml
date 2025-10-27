@@ -1,9 +1,13 @@
 name: Build data from Excel
 
+name: Build data from Excel
+
 on:
   push:
+    branches:
+      - main
     paths:
-      - "Template_Proyectos_Dashboard.xlsx"   # Solo se ejecuta si cambias el Excel
+      - "Template_Proyectos_Dashboard.xlsx"
   workflow_dispatch: {}  # Permite lanzarlo manualmente desde Actions
 
 jobs:
