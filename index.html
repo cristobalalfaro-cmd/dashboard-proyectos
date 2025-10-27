@@ -329,5 +329,26 @@ loadData();
   render();
 })();
 </script>
+      
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      // Ajusta la ruta si sirves desde un subpath, ej: '/dashboard-proyectos/service-worker.js'
+      const reg = await navigator.serviceWorker.register('/service-worker.js');
+      // Si hay una actualización lista, actívala de inmediato:
+      if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+
+      // Cuando el SW nuevo tome control, recarga para usar la versión nueva
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      });
+    } catch (e) {
+      console.error('SW register failed', e);
+    }
+  });
+}
+</script>
+
 </body>
 </html>
